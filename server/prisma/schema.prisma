@@ -1,0 +1,213 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  email        String         @unique
+  name         String
+  password     String
+  transactions Transaction[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Account      Account[]
+  JournalEntry JournalEntry[]
+  Invoice      Invoice[]
+  Employee     Employee[]
+  Customer     Customer[]
+  Vendor       Vendor[]
+  Payment      Payment[]
+  Settings     Settings?
+  AuditLog     AuditLog[]
+  TeamMember   TeamMember[]
+  TaxPayment   TaxPayment[]
+  Notification Notification[]
+}
+
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  date        DateTime @default(now())
+  description String
+  amount      Float
+  type        String // "Credit" or "Debit"
+  category    String
+  status      String   @default("Completed")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Account {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String        @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id])
+  name         String
+  type         String // Asset, Liability, Equity, Revenue, Expense
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  journalLines JournalLine[]
+}
+
+model JournalEntry {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String        @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id])
+  date        DateTime
+  referenceNo String
+  memo        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  lines       JournalLine[]
+}
+
+model JournalLine {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  journalEntryId String       @db.ObjectId
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id])
+  accountId      String       @db.ObjectId
+  account        Account      @relation(fields: [accountId], references: [id])
+  description    String?
+  debit          Float        @default(0)
+  credit         Float        @default(0)
+}
+
+model Invoice {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  invoiceId String
+  client    String
+  amount    Float
+  date      DateTime
+  dueDate   DateTime
+  status    String   @default("Draft")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  name       String
+  role       String
+  department String
+  salary     Float
+  status     String   @default("Active")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  email     String?
+  phone     String?
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vendor {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  category  String?
+  contact   String?
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime
+  amount    Float
+  recipient String
+  method    String
+  status    String   @default("Completed")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  email     String
+  role      String   @default("Viewer")
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Settings {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @unique @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id])
+  companyName      String   @default("My Company")
+  taxId            String   @default("")
+  email            String   @default("")
+  phone            String   @default("")
+  address          String   @default("")
+  city             String   @default("")
+  state            String   @default("")
+  currency         String   @default("USD")
+  twoFactorEnabled Boolean  @default(false)
+  emailInvoices    Boolean  @default(true)
+  emailReports     Boolean  @default(true)
+  emailSecurity    Boolean  @default(true)
+  pushApprovals    Boolean  @default(false)
+  pushOverdue      Boolean  @default(true)
+  estimatedTaxRate Float    @default(20.0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model TaxPayment {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  date        DateTime
+  amount      Float
+  type        String   @default("Estimated Tax")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  module    String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  type      String   @default("info") // info, alert, success
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,198 @@
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-surface);
+}
+
+.leftPanel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.loginBox {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-indigo), var(--color-blue));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+.logoText {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  color: var(--text-main);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.passwordGroup {
+  position: relative;
+}
+
+.forgotLink {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-indigo);
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+.submitBtn {
+  margin-top: 12px;
+}
+
+.securityNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.rightPanel {
+  flex: 1;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-indigo));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+@media (max-width: 900px) {
+  .rightPanel {
+    display: none;
+  }
+}
+
+.illustrationContent {
+  width: 100%;
+  max-width: 500px;
+}
+
+.heroCard {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.heroHeader {
+  display: flex;
+  gap: 6px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.heroDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.heroBody {
+  padding: 32px 24px;
+  color: white;
+}
+
+.heroTitle {
+  margin: 0 0 12px 0;
+  font-size: 1.5rem;
+}
+
+.heroSubtitle {
+  margin: 0 0 32px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.mockGraph {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 120px;
+}
+
+.mockGraph > div {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px 4px 0 0;
+  transition: height 1s ease-out;
+}
+
+.bar1 { height: 40%; }
+.bar2 { height: 60%; }
+.bar3 { height: 30%; }
+.bar4 { height: 80%; background-color: var(--color-emerald) !important; }
+
+.signupPrompt {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.signupLink {
+  color: var(--color-indigo);
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.signupLink:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,154 @@
+import React, { useState, useEffect } from 'react';
+import { Table } from '../components/ui/Table';
+import { Badge } from '../components/ui/Badge';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Plus, Search, Filter, Edit2, Trash2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { CustomerModal } from '../components/CustomerModal';
+import styles from './Customers.module.css';
+
+export function Customers() {
+  const { token } = useAuth();
+  const [customers, setCustomers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchCustomers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/customers', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setCustomers(await response.json());
+      }
+    } catch (err) {
+      console.error('Failed to fetch customers', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) fetchCustomers();
+  }, [token]);
+
+  const handleEdit = (customer) => {
+    setEditingCustomer(customer);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this customer? This cannot be undone.')) {
+      try {
+        const response = await fetch(`/api/customers/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          fetchCustomers();
+        } else {
+          const err = await response.json();
+          alert(`Failed to delete: ${err.error}`);
+        }
+      } catch (err) {
+        console.error('Failed to delete customer', err);
+      }
+    }
+  };
+
+  const openNewModal = () => {
+    setEditingCustomer(null);
+    setIsModalOpen(true);
+  };
+
+  const columns = [
+    { header: 'Name', key: 'name', sortable: true },
+    { header: 'Email', key: 'email', sortable: true },
+    { header: 'Phone', key: 'phone', sortable: false },
+    { 
+      header: 'Status', 
+      key: 'status', 
+      sortable: true,
+      render: (val) => <Badge variant={val === 'Active' ? 'success' : 'default'}>{val}</Badge>
+    },
+    {
+      header: 'Actions',
+      key: 'actions',
+      align: 'right',
+      render: (_, row) => (
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button 
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+            onClick={() => handleEdit(row)}
+            title="Edit"
+          >
+            <Edit2 size={16} />
+          </button>
+          <button 
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }}
+            onClick={() => handleDelete(row.id)}
+            title="Delete"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
+  const filteredData = customers.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className={`${styles.container} animate-fade-in`}>
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Customers</h1>
+          <p className={styles.subtitle}>Manage your clients and contacts.</p>
+        </div>
+        <div className={styles.actions}>
+          <Button icon={Plus} onClick={openNewModal}>Add Customer</Button>
+        </div>
+      </div>
+
+      <div className={styles.filters}>
+        <Input 
+          icon={Search} 
+          placeholder="Search customers..." 
+          containerClassName={styles.searchContainer} 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Button variant="secondary" icon={Filter}>Status: All</Button>
+      </div>
+
+      {isLoading ? (
+        <div>Loading customers...</div>
+      ) : customers.length === 0 ? (
+        <div style={{ padding: '40px', textAlign: 'center', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-lg)' }}>
+          <p>No customers found. Click "Add Customer" to get started.</p>
+        </div>
+      ) : (
+        <Table 
+          columns={columns} 
+          data={filteredData} 
+          itemsPerPage={10} 
+        />
+      )}
+
+      <CustomerModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onCustomerAdded={fetchCustomers} 
+        initialData={editingCustomer}
+      />
+    </div>
+  );
+}
+
