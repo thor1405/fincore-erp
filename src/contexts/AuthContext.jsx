@@ -4,6 +4,7 @@ const AuthContext = createContext({
   user: null,
   token: null,
   login: async (email, password) => {},
+  verify2FALogin: async (tempToken, code) => {},
   register: async (name, email, password) => {},
   logout: () => {},
   loading: true
@@ -56,6 +57,25 @@ export function AuthProvider({ children }) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error);
     
+    if (data.requires2FA) {
+      return data;
+    }
+    
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  };
+
+  const verify2FALogin = async (tempToken, code) => {
+    const response = await fetch(`${API_URL}/login/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tempToken, code })
+    });
+    
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error);
+    
     setToken(data.token);
     setUser(data.user);
     return data;
@@ -81,7 +101,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, verify2FALogin, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

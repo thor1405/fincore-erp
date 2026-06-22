@@ -13,9 +13,10 @@ datasource db {
 model User {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   email        String         @unique
-  name         String
-  password     String
-  transactions Transaction[]
+  name            String
+  password        String
+  twoFactorSecret String?
+  transactions    Transaction[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   Account      Account[]

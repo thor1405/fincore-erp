@@ -32,6 +32,14 @@ export function Settings() {
   const [isInviting, setIsInviting] = useState(false);
   const [generatedInviteLink, setGeneratedInviteLink] = useState('');
 
+  // 2FA State
+  const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [secret2FA, setSecret2FA] = useState('');
+  const [code2FA, setCode2FA] = useState('');
+  const [is2FASetup, setIs2FASetup] = useState(true);
+  const [twoFAStatus, setTwoFAStatus] = useState(null);
+
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -170,6 +178,55 @@ export function Settings() {
     const newValue = !formData[key];
     setFormData(prev => ({ ...prev, [key]: newValue }));
     await updateSettings({ ...formData, [key]: newValue });
+  };
+
+  const handleToggle2FA = async () => {
+    if (formData.twoFactorEnabled) {
+      setIs2FASetup(false);
+      setCode2FA('');
+      setTwoFAStatus(null);
+      setIs2FAModalOpen(true);
+    } else {
+      try {
+        const response = await fetch('/api/auth/2fa/generate', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        setSecret2FA(data.secret);
+        setQrCodeUrl(data.qrCodeUrl);
+        setIs2FASetup(true);
+        setCode2FA('');
+        setTwoFAStatus(null);
+        setIs2FAModalOpen(true);
+      } catch (err) {
+        console.error('Failed to generate 2FA', err);
+      }
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    setTwoFAStatus(null);
+    try {
+      const endpoint = is2FASetup ? '/api/auth/2fa/verify' : '/api/auth/2fa/disable';
+      const body = is2FASetup ? { token: code2FA, secret: secret2FA } : { token: code2FA };
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(body)
+      });
+      
+      if (response.ok) {
+        setFormData(prev => ({ ...prev, twoFactorEnabled: is2FASetup }));
+        setIs2FAModalOpen(false);
+      } else {
+        const data = await response.json();
+        setTwoFAStatus({ type: 'error', message: data.error || 'Invalid code' });
+      }
+    } catch (err) {
+      setTwoFAStatus({ type: 'error', message: 'Failed to verify code' });
+    }
   };
 
   return (
@@ -371,7 +428,7 @@ export function Settings() {
                     </p>
                     <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Use an app like Google Authenticator to get 2FA codes.</p>
                   </div>
-                  <Button variant={formData.twoFactorEnabled ? "danger" : "outline"} onClick={() => togglePreference('twoFactorEnabled')}>
+                  <Button variant={formData.twoFactorEnabled ? "danger" : "outline"} onClick={handleToggle2FA}>
                     {formData.twoFactorEnabled ? "Disable 2FA" : "Enable 2FA"}
                   </Button>
                 </CardContent>
@@ -443,6 +500,54 @@ export function Settings() {
           )}
         </div>
       </div>
+
+      {is2FAModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '100%', maxWidth: '400px', animation: 'fadeIn 0.2s ease-out' }}>
+            <Card>
+              <CardHeader 
+                title={is2FASetup ? "Setup Two-Factor Authentication" : "Disable Two-Factor Authentication"} 
+                action={<button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIs2FAModalOpen(false)}><X size={20} color="var(--text-secondary)" /></button>} 
+              />
+              <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {twoFAStatus && (
+                  <div style={{ padding: '8px 12px', borderRadius: '6px', backgroundColor: 'var(--color-red-light)', color: 'var(--color-red)', fontSize: '0.875rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <AlertCircle size={16} />
+                    {twoFAStatus.message}
+                  </div>
+                )}
+                
+                {is2FASetup && qrCodeUrl && (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                    <p style={{ margin: 0, fontSize: '0.875rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Scan this QR code with your Authenticator app (e.g. Google Authenticator, Authy).</p>
+                    <div style={{ padding: '16px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                      <img src={qrCodeUrl} alt="2FA QR Code" style={{ width: '180px', height: '180px', display: 'block' }} />
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Manual setup secret: <span style={{ fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '1px' }}>{secret2FA}</span></p>
+                  </div>
+                )}
+                
+                {!is2FASetup && (
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Enter the 6-digit code from your Authenticator app to disable Two-Factor Authentication.</p>
+                )}
+
+                <Input 
+                  label="Verification Code" 
+                  type="text" 
+                  placeholder="Enter 6-digit code" 
+                  value={code2FA} 
+                  onChange={(e) => setCode2FA(e.target.value)} 
+                  maxLength={6}
+                />
+                
+                <Button onClick={handleVerify2FA} disabled={code2FA.length < 6} fullWidth>
+                  {is2FASetup ? "Verify & Enable" : "Verify & Disable"}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
