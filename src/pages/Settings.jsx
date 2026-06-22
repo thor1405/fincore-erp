@@ -193,6 +193,11 @@ export function Settings() {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
+        
+        if (!response.ok) {
+           throw new Error(data.error || 'Failed to generate secret');
+        }
+        
         setSecret2FA(data.secret);
         setQrCodeUrl(data.qrCodeUrl);
         setIs2FASetup(true);
@@ -201,6 +206,10 @@ export function Settings() {
         setIs2FAModalOpen(true);
       } catch (err) {
         console.error('Failed to generate 2FA', err);
+        setIs2FASetup(true);
+        setCode2FA('');
+        setTwoFAStatus({ type: 'error', message: err.message });
+        setIs2FAModalOpen(true);
       }
     }
   };

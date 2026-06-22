@@ -311,12 +311,14 @@ router.post('/2fa/generate', authenticateToken, async (req, res) => {
     const secret = authenticator.generateSecret();
     const otpauthUrl = authenticator.keyuri(user.email, 'FinCore ERP', secret);
     
-    const qrCodeUrl = await qrcode.toDataURL(otpauthUrl);
+    // Use SVG to completely avoid the fragile node-canvas dependency on Raspberry Pi
+    const svgString = await qrcode.toString(otpauthUrl, { type: 'svg' });
+    const qrCodeUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
     
     res.json({ secret, qrCodeUrl });
   } catch (error) {
     console.error('2FA generate error:', error);
-    res.status(500).json({ error: 'Error generating 2FA secret' });
+    res.status(500).json({ error: error.message || 'Error generating 2FA secret' });
   }
 });
 
@@ -349,7 +351,7 @@ router.post('/2fa/verify', authenticateToken, async (req, res) => {
     res.json({ message: '2FA enabled successfully' });
   } catch (error) {
     console.error('2FA verify error:', error);
-    res.status(500).json({ error: 'Error verifying 2FA' });
+    res.status(500).json({ error: error.message || 'Error verifying 2FA' });
   }
 });
 
