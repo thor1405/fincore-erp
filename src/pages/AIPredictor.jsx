@@ -38,13 +38,21 @@ export function AIPredictor() {
     setIsTyping(true);
 
     try {
+      const requestPayload = {
+        prompt: userMsg.content,
+        history: messages.filter(m => m.id !== 'welcome').map(m => ({
+          role: m.role,
+          content: m.content
+        }))
+      };
+
       const response = await fetch('/api/ai/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ prompt: userMsg.content })
+        body: JSON.stringify(requestPayload)
       });
       
       const data = await response.json();
