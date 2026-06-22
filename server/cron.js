@@ -30,8 +30,8 @@ const initCronJobs = () => {
     }
   });
 
-  // Weekly on Friday at 5:00 PM - Send Weekly Financial Summary
-  cron.schedule('0 17 * * 5', async () => {
+  // Weekly on Saturday at 5:00 PM - Send Weekly Financial Summary
+  cron.schedule('0 17 * * 6', async () => {
     console.log('🕒 Running Weekly Financial Summary generation...');
     try {
       const users = await prisma.user.findMany();
