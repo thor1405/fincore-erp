@@ -69,20 +69,17 @@ export function Dashboard() {
     XLSX.writeFile(wb, `Dashboard_${timeframe}.xlsx`);
   };
 
-  const renderKPI = (title, metric, invertColors = false) => {
+  const renderKPI = (title, metric, invertColors = false, chartColor = 'emerald') => {
     let badgeColor = 'neutral';
-    let sparklineColor = invertColors ? 'red' : 'emerald';
     let icon = null;
     let badgeContent = 'N/A';
     
     if (metric.growth !== null) {
       if (metric.growth > 0) {
         badgeColor = invertColors ? 'down' : 'up';
-        sparklineColor = invertColors ? 'red' : 'emerald';
         icon = <ArrowUpRight size={14} />;
       } else if (metric.growth < 0) {
         badgeColor = invertColors ? 'up' : 'down';
-        sparklineColor = invertColors ? 'emerald' : 'red';
         icon = <ArrowDownRight size={14} />;
       }
       badgeContent = <>{icon} {Math.abs(metric.growth).toFixed(1)}%</>;
@@ -104,7 +101,7 @@ export function Dashboard() {
             <LineChart 
               data={metric.sparkline} 
               xKey="index" 
-              series={[{ dataKey: 'value', color: sparklineColor }]} 
+              series={[{ dataKey: 'value', color: chartColor }]} 
               height={40} 
             />
           </div>
@@ -171,10 +168,10 @@ export function Dashboard() {
 
       {/* KPI ROW */}
       <div className={styles.kpiGrid}>
-        {renderKPI('Total Revenue', data.kpis.revenue)}
-        {renderKPI('Total Expenses', data.kpis.expenses, true)}
-        {renderKPI('Net Profit', data.kpis.profit)}
-        {renderKPI('Cash Balance', data.kpis.cash)}
+        {renderKPI('Total Revenue', data.kpis.revenue, false, 'emerald')}
+        {renderKPI('Total Expenses', data.kpis.expenses, true, 'red')}
+        {renderKPI('Net Profit', data.kpis.profit, false, 'blue')}
+        {renderKPI('Cash Balance', data.kpis.cash, false, 'blue')}
       </div>
 
       {/* CHARTS ROW (70/30) */}
