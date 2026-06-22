@@ -17,6 +17,7 @@ export function Transactions() {
   const { formatCurrency } = useSettings();
   const [transactions, setTransactions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterDate, setFilterDate] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -184,11 +185,13 @@ export function Transactions() {
     XLSX.writeFile(wb, 'Transactions.xlsx');
   };
 
-  const filteredData = transactions.filter(t => 
-    t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = transactions.filter(t => {
+    const matchesSearch = t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.type.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDate = filterDate ? t.date === filterDate : true;
+    return matchesSearch && matchesDate;
+  });
 
   return (
     <div className={`${styles.container} animate-fade-in`}>
@@ -213,7 +216,17 @@ export function Transactions() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button variant="secondary" icon={Filter}>Filters</Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Input 
+            type="date" 
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            title="Filter by specific date"
+          />
+          {filterDate && (
+            <Button variant="ghost" onClick={() => setFilterDate('')}>Clear</Button>
+          )}
+        </div>
       </div>
 
       {isLoading ? (
