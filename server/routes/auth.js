@@ -146,7 +146,7 @@ router.get('/me', authenticateToken, async (req, res) => {
     
     if (!user) return res.status(404).json({ error: 'User not found' });
     
-    res.json(user);
+    res.json({ ...user, role: req.user.role || 'Owner' });
   } catch (error) {
     res.status(500).json({ error: 'Error fetching user' });
   }
