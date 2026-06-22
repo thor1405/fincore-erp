@@ -122,7 +122,21 @@ router.get('/', authenticateToken, async (req, res) => {
       return ((curr - prev) / prev) * 100;
     };
 
-    const cashFlowData = Object.values(cashFlowMap).sort((a, b) => a.timestamp - b.timestamp).map(({ timestamp, ...rest }) => rest);
+    const sortedCashFlow = Object.values(cashFlowMap).sort((a, b) => a.timestamp - b.timestamp);
+    let cumIn = 0;
+    let cumOut = 0;
+    let cumProfit = 0;
+    const cashFlowData = sortedCashFlow.map(({ timestamp, ...rest }) => {
+      cumIn += rest.in;
+      cumOut += rest.out;
+      cumProfit += rest.profit;
+      return {
+        ...rest,
+        in: cumIn,
+        out: cumOut,
+        profit: cumProfit
+      };
+    });
     
     const revSparkline = cashFlowData.map((d, i) => ({ index: i, value: d.in })).slice(-7);
     const expSparkline = cashFlowData.map((d, i) => ({ index: i, value: d.out })).slice(-7);

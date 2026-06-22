@@ -33,7 +33,7 @@ const getThemeColors = (theme) => {
   };
 };
 
-const CustomTooltip = ({ active, payload, label, colors }) => {
+const CustomTooltip = ({ active, payload, label, colors, valueFormatter }) => {
   if (active && payload && payload.length) {
     return (
       <div style={{
@@ -49,7 +49,7 @@ const CustomTooltip = ({ active, payload, label, colors }) => {
           <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: entry.color }} />
             <span style={{ color: colors.text }}>{entry.name}:</span>
-            <span style={{ fontWeight: 600 }}>{entry.value}</span>
+            <span style={{ fontWeight: 600 }}>{valueFormatter ? valueFormatter(entry.value) : entry.value}</span>
           </div>
         ))}
       </div>
@@ -58,7 +58,7 @@ const CustomTooltip = ({ active, payload, label, colors }) => {
   return null;
 };
 
-export function AreaChart({ data, xKey, series, height = 300 }) {
+export function AreaChart({ data, xKey, series, height = 300, valueFormatter }) {
   const { theme } = useTheme();
   const colors = getThemeColors(theme);
 
@@ -88,10 +88,10 @@ export function AreaChart({ data, xKey, series, height = 300 }) {
             fontSize={12} 
             tickLine={false} 
             axisLine={false} 
-            tickFormatter={(value) => `$${value}`} 
+            tickFormatter={valueFormatter || ((value) => `$${value}`)} 
             dx={-10}
           />
-          <Tooltip content={<CustomTooltip colors={colors} />} />
+          <Tooltip content={<CustomTooltip colors={colors} valueFormatter={valueFormatter} />} />
           {series.map((s, idx) => (
             <Area
               key={idx}
@@ -110,7 +110,7 @@ export function AreaChart({ data, xKey, series, height = 300 }) {
   );
 }
 
-export function BarChart({ data, xKey, series, height = 300 }) {
+export function BarChart({ data, xKey, series, height = 300, valueFormatter }) {
   const { theme } = useTheme();
   const colors = getThemeColors(theme);
 
@@ -132,10 +132,10 @@ export function BarChart({ data, xKey, series, height = 300 }) {
             fontSize={12} 
             tickLine={false} 
             axisLine={false} 
-            tickFormatter={(value) => `$${value}`} 
+            tickFormatter={valueFormatter || ((value) => `$${value}`)} 
             dx={-10}
           />
-          <Tooltip content={<CustomTooltip colors={colors} />} cursor={{ fill: 'transparent' }} />
+          <Tooltip content={<CustomTooltip colors={colors} valueFormatter={valueFormatter} />} cursor={{ fill: 'transparent' }} />
           {series.map((s, idx) => (
             <Bar
               key={idx}

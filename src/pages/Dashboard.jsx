@@ -197,6 +197,7 @@ export function Dashboard() {
                   { dataKey: 'profit', name: 'Profit', color: 'blue' }
                 ]} 
                 height={350} 
+                valueFormatter={formatCurrency}
               />
             )}
           </CardContent>
@@ -245,6 +246,7 @@ export function Dashboard() {
                 xKey="name" 
                 series={[{ dataKey: 'value', name: 'Amount', color: 'indigo' }]} 
                 height={220} 
+                valueFormatter={formatCurrency}
               />
             )}
           </CardContent>
