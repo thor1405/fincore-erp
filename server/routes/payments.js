@@ -44,7 +44,7 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
           description: `Payment to ${payment.recipient} (${payment.method})`,
           amount: payment.amount,
           type: 'Debit',
-          category: 'Operating Expense',
+          category: 'Expense',
           status: 'Completed'
         }
       });
@@ -95,7 +95,7 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
           description: `Payment to ${payment.recipient} (${payment.method})`,
           amount: payment.amount,
           type: 'Debit',
-          category: 'Operating Expense',
+          category: 'Expense',
           status: 'Completed'
         }
       });
