@@ -14,6 +14,7 @@ import { InvoiceModal } from '../components/InvoiceModal';
 import { CustomerModal } from '../components/CustomerModal';
 import { PaymentModal } from '../components/PaymentModal';
 import { AgingReportModal } from '../components/AgingReportModal';
+import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
 import styles from './Dashboard.module.css';
 
@@ -156,7 +157,9 @@ export function Dashboard() {
             <option value="all">All Time</option>
           </select>
           <Button variant="outline" icon={Download} onClick={handleExportExcel}>Export Data</Button>
-          <Button icon={Plus} onClick={() => setIsTxModalOpen(true)}>New Transaction</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => setIsTxModalOpen(true)}>New Transaction</Button>
+          </RoleGuard>
         </div>
       </div>
 
@@ -290,24 +293,33 @@ export function Dashboard() {
         <Card>
           <CardHeader title="Quick Actions" subtitle="Fast data entry" />
           <CardContent>
-            <div className={styles.quickActions}>
-              <div className={styles.actionBtn} onClick={() => setIsInvoiceModalOpen(true)}>
-                <div className={styles.actionBtnIcon}><FilePlus size={24} /></div>
-                <span className={styles.actionBtnText}>Create Invoice</span>
+            <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+              <div className={styles.quickActions}>
+                <div className={styles.actionBtn} onClick={() => setIsInvoiceModalOpen(true)}>
+                  <div className={styles.actionBtnIcon}><FilePlus size={24} /></div>
+                  <span className={styles.actionBtnText}>Create Invoice</span>
+                </div>
+                <div className={styles.actionBtn} onClick={() => setIsTxModalOpen(true)}>
+                  <div className={styles.actionBtnIcon}><CreditCard size={24} /></div>
+                  <span className={styles.actionBtnText}>Record Expense</span>
+                </div>
+                <div className={styles.actionBtn} onClick={() => setIsCustomerModalOpen(true)}>
+                  <div className={styles.actionBtnIcon}><Users size={24} /></div>
+                  <span className={styles.actionBtnText}>Add Customer</span>
+                </div>
+                <div className={styles.actionBtn} onClick={() => setIsPaymentModalOpen(true)}>
+                  <div className={styles.actionBtnIcon}><Activity size={24} /></div>
+                  <span className={styles.actionBtnText}>Record Payment</span>
+                </div>
               </div>
-              <div className={styles.actionBtn} onClick={() => setIsTxModalOpen(true)}>
-                <div className={styles.actionBtnIcon}><CreditCard size={24} /></div>
-                <span className={styles.actionBtnText}>Record Expense</span>
-              </div>
-              <div className={styles.actionBtn} onClick={() => setIsCustomerModalOpen(true)}>
-                <div className={styles.actionBtnIcon}><Users size={24} /></div>
-                <span className={styles.actionBtnText}>Add Customer</span>
-              </div>
-              <div className={styles.actionBtn} onClick={() => setIsPaymentModalOpen(true)}>
-                <div className={styles.actionBtnIcon}><Activity size={24} /></div>
-                <span className={styles.actionBtnText}>Record Payment</span>
-              </div>
-            </div>
+            </RoleGuard>
+            {(!token || !['Owner', 'Admin', 'Editor'].includes(data.role)) && (
+               <RoleGuard allowedRoles={['Viewer']}>
+                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                   Quick actions are restricted for viewers.
+                 </div>
+               </RoleGuard>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -11,6 +11,7 @@ import styles from './Settings.module.css';
 export function Settings() {
   const { token, user } = useAuth();
   const { settings, updateSettings } = useSettings();
+  const canEdit = ['Owner', 'Admin'].includes(user?.role);
   
   const [activeTab, setActiveTab] = useState('profile');
   
@@ -261,7 +262,7 @@ export function Settings() {
                         <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Email</th>
                         <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Role</th>
                         <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Status</th>
-                        <RoleGuard allowedRoles={['Owner', 'Admin']}><th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Actions</th></RoleGuard>
+                        {canEdit && <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Actions</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -270,7 +271,7 @@ export function Settings() {
                         <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{user?.email}</td>
                         <td style={{ padding: '16px' }}><span style={{ backgroundColor: 'var(--color-indigo)', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>Owner</span></td>
                         <td style={{ padding: '16px' }}><span style={{ color: 'var(--color-emerald)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}><CheckCircle size={14} /> Active</span></td>
-                        <RoleGuard allowedRoles={['Owner', 'Admin']}><td style={{ padding: '16px' }}></td></RoleGuard>
+                        {canEdit && <td style={{ padding: '16px' }}></td>}
                       </tr>
                       {teamMembers.map(member => (
                         <tr key={member.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
@@ -282,13 +283,13 @@ export function Settings() {
                           <td style={{ padding: '16px' }}>
                             <span style={{ color: 'var(--color-amber)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}><AlertCircle size={14} /> {member.status}</span>
                           </td>
-                          <RoleGuard allowedRoles={['Owner', 'Admin']}>
+                          {canEdit && (
                             <td style={{ padding: '16px' }}>
                               <button onClick={() => handleRemoveMember(member.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} title="Remove User">
                                 <Trash2 size={18} />
                               </button>
                             </td>
-                          </RoleGuard>
+                          )}
                         </tr>
                       ))}
                     </tbody>
