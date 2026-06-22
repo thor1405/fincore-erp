@@ -56,6 +56,7 @@ export function AIPredictor() {
     setInput('');
     setIsTyping(true);
 
+    try {
       const response = await fetch('/api/ai/predict', {
         method: 'POST',
         headers: {
