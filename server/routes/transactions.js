@@ -75,6 +75,25 @@ router.put('/:id', authenticateToken, async (req, res) => {
       },
     });
 
+    if (tx.category === 'Taxes') {
+      const taxPayments = await prisma.taxPayment.findMany({
+        where: {
+          userId: req.user.userId,
+          amount: tx.amount,
+          date: tx.date
+        }
+      });
+      if (taxPayments.length > 0) {
+        await prisma.taxPayment.update({
+          where: { id: taxPayments[0].id },
+          data: {
+            amount: parseFloat(amount),
+            date: date ? new Date(date) : undefined
+          }
+        });
+      }
+    }
+
     await createAuditLog(
       req.user.userId,
       'UPDATED_TRANSACTION',
@@ -98,6 +117,21 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const tx = await prisma.transaction.findUnique({ where: { id } });
     if (!tx || tx.userId !== req.user.userId) {
       return res.status(404).json({ error: 'Transaction not found or unauthorized' });
+    }
+
+    if (tx.category === 'Taxes') {
+      const taxPayments = await prisma.taxPayment.findMany({
+        where: {
+          userId: req.user.userId,
+          amount: tx.amount,
+          date: tx.date
+        }
+      });
+      if (taxPayments.length > 0) {
+        await prisma.taxPayment.delete({
+          where: { id: taxPayments[0].id }
+        });
+      }
     }
 
     const transaction = await prisma.transaction.delete({
