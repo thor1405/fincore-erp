@@ -70,16 +70,20 @@ export function Dashboard() {
   };
 
   const renderKPI = (title, metric, invertColors = false) => {
-    const isUp = metric.growth >= 0;
+    const isUp = metric.growth !== null && metric.growth >= 0;
     let trendColor = 'neutral';
     let icon = null;
+    let badgeContent = 'N/A';
     
-    if (metric.growth > 0) {
-      trendColor = invertColors ? 'down' : 'up';
-      icon = <ArrowUpRight size={14} />;
-    } else if (metric.growth < 0) {
-      trendColor = invertColors ? 'up' : 'down';
-      icon = <ArrowDownRight size={14} />;
+    if (metric.growth !== null) {
+      if (metric.growth > 0) {
+        trendColor = invertColors ? 'down' : 'up';
+        icon = <ArrowUpRight size={14} />;
+      } else if (metric.growth < 0) {
+        trendColor = invertColors ? 'up' : 'down';
+        icon = <ArrowDownRight size={14} />;
+      }
+      badgeContent = <>{icon} {Math.abs(metric.growth).toFixed(1)}%</>;
     }
 
     return (
@@ -88,7 +92,7 @@ export function Dashboard() {
           <div className={styles.kpiTop}>
             <h3 className={styles.kpiTitle}>{title}</h3>
             <div className={`${styles.kpiGrowthBadge} ${styles[trendColor]}`}>
-              {icon} {Math.abs(metric.growth).toFixed(1)}%
+              {badgeContent}
             </div>
           </div>
           <div className={styles.kpiValueRow}>
@@ -187,7 +191,8 @@ export function Dashboard() {
                 xKey="time" 
                 series={[
                   { dataKey: 'in', name: 'Inflow', color: 'emerald' },
-                  { dataKey: 'out', name: 'Outflow', color: 'red' }
+                  { dataKey: 'out', name: 'Outflow', color: 'red' },
+                  { dataKey: 'profit', name: 'Profit', color: 'blue' }
                 ]} 
                 height={350} 
               />

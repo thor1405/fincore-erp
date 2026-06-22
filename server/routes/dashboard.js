@@ -73,10 +73,16 @@ router.get('/', authenticateToken, async (req, res) => {
         timeKey = t.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       }
       if (!cashFlowMap[timeKey]) {
-        cashFlowMap[timeKey] = { time: timeKey, in: 0, out: 0, timestamp: t.date.getTime() };
+        cashFlowMap[timeKey] = { time: timeKey, in: 0, out: 0, profit: 0, timestamp: t.date.getTime() };
       }
-      if (t.type === 'Credit') cashFlowMap[timeKey].in += t.amount;
-      if (t.type === 'Debit') cashFlowMap[timeKey].out += Math.abs(t.amount);
+      if (t.type === 'Credit') {
+        cashFlowMap[timeKey].in += t.amount;
+        cashFlowMap[timeKey].profit += t.amount;
+      }
+      if (t.type === 'Debit') {
+        cashFlowMap[timeKey].out += Math.abs(t.amount);
+        cashFlowMap[timeKey].profit -= Math.abs(t.amount);
+      }
     });
 
     let prevRevenue = 0;
@@ -92,7 +98,7 @@ router.get('/', authenticateToken, async (req, res) => {
     const prevCash = prevProfit;
 
     const calcGrowth = (curr, prev) => {
-      if (prev === 0) return curr > 0 ? 100 : 0;
+      if (prev === 0) return null;
       return ((curr - prev) / prev) * 100;
     };
 
