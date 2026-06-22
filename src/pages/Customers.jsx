@@ -6,10 +6,12 @@ import { Input } from '../components/ui/Input';
 import { Plus, Search, Filter, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { CustomerModal } from '../components/CustomerModal';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './Customers.module.css';
 
 export function Customers() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,29 +77,17 @@ export function Customers() {
       sortable: true,
       render: (val) => <Badge variant={val === 'Active' ? 'success' : 'default'}>{val}</Badge>
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
       render: (_, row) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-          <button 
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
-            onClick={() => handleEdit(row)}
-            title="Edit"
-          >
-            <Edit2 size={16} />
-          </button>
-          <button 
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }}
-            onClick={() => handleDelete(row.id)}
-            title="Delete"
-          >
-            <Trash2 size={16} />
-          </button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
         </div>
       )
-    }
+    }] : [])
   ];
 
   const filteredData = customers.filter(c => 
@@ -113,7 +103,9 @@ export function Customers() {
           <p className={styles.subtitle}>Manage your clients and contacts.</p>
         </div>
         <div className={styles.actions}>
-          <Button icon={Plus} onClick={openNewModal}>Add Customer</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => { setEditingCustomer(null); setIsModalOpen(true); }}>Add Customer</Button>
+          </RoleGuard>
         </div>
       </div>
 

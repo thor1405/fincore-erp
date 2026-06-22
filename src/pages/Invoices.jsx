@@ -7,11 +7,13 @@ import { Plus, Search, FileText, Filter, Download, Edit2, Trash2, CheckCircle2 }
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { InvoiceModal } from '../components/InvoiceModal';
+import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
 import styles from './Invoices.module.css';
 
 export function Invoices() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const { formatCurrency } = useSettings();
   const [invoices, setInvoices] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,7 +114,7 @@ export function Invoices() {
         );
       }
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
@@ -126,7 +128,7 @@ export function Invoices() {
           <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(invoice.id)} style={{ color: 'var(--color-red)' }} />
         </div>
       )
-    }
+    }] : [])
   ];
 
   const handleExportExcel = () => {
@@ -158,8 +160,10 @@ export function Invoices() {
           <p className={styles.subtitle}>Manage your billing and track payments.</p>
         </div>
         <div className={styles.actions}>
-          <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || invoices.length === 0}>Export to Excel</Button>
-          <Button icon={Plus} onClick={() => { setEditingInvoice(null); setIsModalOpen(true); }}>Create Invoice</Button>
+          <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || invoices.length === 0}>Export</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => { setEditingInvoice(null); setIsModalOpen(true); }}>Create Invoice</Button>
+          </RoleGuard>
         </div>
       </div>
 

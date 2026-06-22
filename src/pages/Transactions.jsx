@@ -7,11 +7,13 @@ import { Download, Filter, Plus, Search, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { TransactionModal } from '../components/TransactionModal';
+import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
 import styles from './Transactions.module.css';
 
 export function Transactions() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const { formatCurrency } = useSettings();
   const [transactions, setTransactions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,7 +100,7 @@ export function Transactions() {
         </Badge>
       )
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
@@ -120,7 +122,7 @@ export function Transactions() {
           </button>
         </div>
       )
-    }
+    }] : [])
   ];
 
   const handleExportExcel = () => {
@@ -153,7 +155,9 @@ export function Transactions() {
         </div>
         <div className={styles.actions}>
           <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || transactions.length === 0}>Export to Excel</Button>
-          <Button icon={Plus} onClick={openNewModal}>Add Transaction</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={openNewModal}>Add Transaction</Button>
+          </RoleGuard>
         </div>
       </div>
 

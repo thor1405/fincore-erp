@@ -7,10 +7,12 @@ import { Plus, Search, Filter, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { PaymentModal } from '../components/PaymentModal';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './Payments.module.css';
 
 export function Payments() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const { formatCurrency } = useSettings();
   const [payments, setPayments] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,17 +79,17 @@ export function Payments() {
       sortable: true,
       render: (val) => <Badge variant={val === 'Completed' ? 'success' : 'default'}>{val}</Badge>
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
-      render: (_, payment) => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-          <Button variant="ghost" size="sm" icon={Edit2} onClick={() => handleEdit(payment)} />
-          <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(payment.id)} style={{ color: 'var(--color-red)' }} />
+      render: (_, row) => (
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
         </div>
       )
-    }
+    }] : [])
   ];
 
   const filteredData = payments.filter(p => 
@@ -104,7 +106,9 @@ export function Payments() {
           <p className={styles.subtitle}>Track outgoing money and vendor settlements.</p>
         </div>
         <div className={styles.actions}>
-          <Button icon={Plus} onClick={() => { setEditingPayment(null); setIsModalOpen(true); }}>Record Payment</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => { setEditingPayment(null); setIsModalOpen(true); }}>Record Payment</Button>
+          </RoleGuard>
         </div>
       </div>
 

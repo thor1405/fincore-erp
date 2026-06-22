@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Sparkles, Send, Bot, User, Loader, Calculator, DollarSign, ArrowRight, Percent, Calendar, FileText } from 'lucide-react';
+import { Sparkles, Send, Bot, User, Loader, Calculator, DollarSign, ArrowRight, Percent, Calendar, FileText, Save, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './Reports.module.css'; // Reuse existing styles for consistency
 
 export function Taxes() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const { formatCurrency } = useSettings();
   const [taxData, setTaxData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -127,10 +129,13 @@ export function Taxes() {
                   onChange={(e) => setRate(e.target.value)} 
                   containerClassName={styles.fullSpan} 
                   style={{ marginBottom: 0, width: '100px' }} 
+                  disabled={!canEdit}
                 />
-                <Button variant="outline" onClick={handleUpdateRate} disabled={isUpdatingRate} style={{ marginTop: '24px' }}>
-                  {isUpdatingRate ? 'Saving...' : 'Update Rate'}
-                </Button>
+                <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+                  <Button variant="outline" onClick={handleUpdateRate} disabled={isUpdatingRate} style={{ marginTop: '24px' }}>
+                    {isUpdatingRate ? 'Saving...' : 'Update Rate'}
+                  </Button>
+                </RoleGuard>
               </div>
 
               <div style={{ padding: '16px', backgroundColor: 'var(--bg-element)', borderRadius: '8px', border: '1px solid var(--border-color)', marginTop: '8px' }}>
@@ -161,35 +166,45 @@ export function Taxes() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
         <Card>
-          <CardHeader title="Record Tax Payment" />
+          <CardHeader 
+            title="Record Tax Payment" 
+            subtitle="Log a payment made to the tax authority."
+          />
           <CardContent>
-            <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <Input 
-                label="Amount Paid" 
-                type="number" 
-                step="0.01" 
-                required 
-                value={amount} 
-                onChange={(e) => setAmount(e.target.value)} 
-              />
-              <Input 
-                label="Date Paid" 
-                type="date" 
-                required 
-                value={date} 
-                onChange={(e) => setDate(e.target.value)} 
-              />
-              <Input 
-                label="Description / Period" 
-                placeholder="e.g. Q1 Estimated Tax" 
-                required 
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-              />
-              <Button type="submit" disabled={isSubmitting} style={{ marginTop: '8px' }}>
-                {isSubmitting ? 'Recording...' : 'Record Payment'}
-              </Button>
-            </form>
+            <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+              <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <Input 
+                  label="Amount Paid" 
+                  type="number" 
+                  step="0.01" 
+                  required 
+                  value={amount} 
+                  onChange={(e) => setAmount(e.target.value)} 
+                />
+                <Input 
+                  label="Date Paid" 
+                  type="date" 
+                  required 
+                  value={date} 
+                  onChange={(e) => setDate(e.target.value)} 
+                />
+                <Input 
+                  label="Description / Period" 
+                  placeholder="e.g. Q1 Estimated Tax" 
+                  required 
+                  value={description} 
+                  onChange={(e) => setDescription(e.target.value)} 
+                />
+                <Button type="submit" disabled={isSubmitting} style={{ marginTop: '8px' }}>
+                  {isSubmitting ? 'Recording...' : 'Record Payment'}
+                </Button>
+              </form>
+            </RoleGuard>
+            {!canEdit && (
+              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                You do not have permission to record tax payments.
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Building, Shield, Bell, Users, Save, Plus, Mail, Smartphone, AlertCircle, Key, CheckCircle, ShieldCheck, X } from 'lucide-react';
+import { Building, Shield, Bell, Users, Save, Plus, Mail, Smartphone, AlertCircle, Key, CheckCircle, ShieldCheck, X, Trash2 } from 'lucide-react';
 import { useSettings } from '../contexts/SettingsContext';
 import { useAuth } from '../contexts/AuthContext';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './Settings.module.css';
 
 export function Settings() {
@@ -148,6 +149,22 @@ export function Settings() {
     }
   };
 
+  const handleRemoveMember = async (id) => {
+    if (!window.confirm("Are you sure you want to remove this team member? They will instantly lose access to this workspace.")) return;
+    
+    try {
+      const response = await fetch(`/api/team/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setTeamMembers(prev => prev.filter(m => m.id !== id));
+      }
+    } catch (err) {
+      console.error('Failed to remove team member', err);
+    }
+  };
+
   const togglePreference = async (key) => {
     const newValue = !formData[key];
     setFormData(prev => ({ ...prev, [key]: newValue }));
@@ -162,11 +179,13 @@ export function Settings() {
           <p className={styles.subtitle}>Manage your company profile and preferences.</p>
         </div>
         {activeTab === 'profile' && (
-          <div className={styles.actions}>
-            <Button icon={Save} onClick={handleSaveProfile} disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </div>
+          <RoleGuard allowedRoles={['Owner', 'Admin']}>
+            <div className={styles.actions}>
+              <Button icon={Save} onClick={handleSaveProfile} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </RoleGuard>
         )}
       </div>
 
@@ -228,7 +247,11 @@ export function Settings() {
                 <CardHeader 
                   title="Team Members" 
                   subtitle="Manage who has access to your workspace" 
-                  action={<Button size="sm" icon={Plus} onClick={() => setIsInviteModalOpen(true)}>Invite User</Button>}
+                  action={
+                    <RoleGuard allowedRoles={['Owner', 'Admin']}>
+                      <Button size="sm" icon={Plus} onClick={() => setIsInviteModalOpen(true)}>Invite User</Button>
+                    </RoleGuard>
+                  }
                 />
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -238,6 +261,7 @@ export function Settings() {
                         <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Email</th>
                         <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Role</th>
                         <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Status</th>
+                        <RoleGuard allowedRoles={['Owner', 'Admin']}><th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.875rem' }}>Actions</th></RoleGuard>
                       </tr>
                     </thead>
                     <tbody>
@@ -246,6 +270,7 @@ export function Settings() {
                         <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{user?.email}</td>
                         <td style={{ padding: '16px' }}><span style={{ backgroundColor: 'var(--color-indigo)', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>Owner</span></td>
                         <td style={{ padding: '16px' }}><span style={{ color: 'var(--color-emerald)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}><CheckCircle size={14} /> Active</span></td>
+                        <RoleGuard allowedRoles={['Owner', 'Admin']}><td style={{ padding: '16px' }}></td></RoleGuard>
                       </tr>
                       {teamMembers.map(member => (
                         <tr key={member.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
@@ -257,6 +282,13 @@ export function Settings() {
                           <td style={{ padding: '16px' }}>
                             <span style={{ color: 'var(--color-amber)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}><AlertCircle size={14} /> {member.status}</span>
                           </td>
+                          <RoleGuard allowedRoles={['Owner', 'Admin']}>
+                            <td style={{ padding: '16px' }}>
+                              <button onClick={() => handleRemoveMember(member.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} title="Remove User">
+                                <Trash2 size={18} />
+                              </button>
+                            </td>
+                          </RoleGuard>
                         </tr>
                       ))}
                     </tbody>

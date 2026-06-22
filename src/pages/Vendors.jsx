@@ -6,10 +6,12 @@ import { Input } from '../components/ui/Input';
 import { Plus, Search, Filter, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { VendorModal } from '../components/VendorModal';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './Vendors.module.css';
 
 export function Vendors() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [vendors, setVendors] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,17 +66,17 @@ export function Vendors() {
       sortable: true,
       render: (val) => <Badge variant={val === 'Active' ? 'success' : 'default'}>{val}</Badge>
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
-      render: (_, vendor) => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-          <Button variant="ghost" size="sm" icon={Edit2} onClick={() => handleEdit(vendor)} />
-          <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(vendor.id)} style={{ color: 'var(--color-red)' }} />
+      render: (_, row) => (
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
         </div>
       )
-    }
+    }] : [])
   ];
 
   const filteredData = vendors.filter(v => 
@@ -91,7 +93,9 @@ export function Vendors() {
           <p className={styles.subtitle}>Manage your suppliers and contractors.</p>
         </div>
         <div className={styles.actions}>
-          <Button icon={Plus} onClick={() => { setEditingVendor(null); setIsModalOpen(true); }}>Add Vendor</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => { setEditingVendor(null); setIsModalOpen(true); }}>Add Vendor</Button>
+          </RoleGuard>
         </div>
       </div>
 

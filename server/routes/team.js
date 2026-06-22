@@ -89,4 +89,30 @@ router.post('/invite/:id/accept', async (req, res) => {
   }
 });
 
+// Remove a team member
+router.delete('/:id', authenticateToken, requireAdminAccess, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingMember = await prisma.teamMember.findUnique({ where: { id } });
+    if (!existingMember || existingMember.userId !== req.user.userId) {
+      return res.status(404).json({ error: 'Team member not found or unauthorized' });
+    }
+
+    await prisma.teamMember.delete({ where: { id } });
+
+    await createAuditLog(
+      req.user.userId,
+      'REMOVED_TEAM_MEMBER',
+      'Settings',
+      `Removed team member ${existingMember.email}`
+    );
+
+    res.json({ message: 'Team member removed successfully' });
+  } catch (error) {
+    console.error('Error removing team member:', error);
+    res.status(500).json({ error: 'Failed to remove team member' });
+  }
+});
+
 module.exports = router;

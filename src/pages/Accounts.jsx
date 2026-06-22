@@ -3,16 +3,21 @@ import { Table } from '../components/ui/Table';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Filter } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { AccountModal } from '../components/AccountModal';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './Accounts.module.css';
 
 export function Accounts() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const { formatCurrency } = useSettings();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [accounts, setAccounts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchAccounts = async () => {
@@ -28,6 +33,24 @@ export function Accounts() {
       console.error('Failed to fetch accounts', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleEdit = (account) => {
+    setEditingAccount(account);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this account?')) return;
+    try {
+      await fetch(`/api/accounts/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      fetchAccounts();
+    } catch (err) {
+      console.error('Failed to delete account', err);
     }
   };
 
@@ -50,7 +73,26 @@ export function Accounts() {
         if (val === 'Expense') variant = 'error';
         return <Badge variant={variant}>{val}</Badge>;
       }
-    }
+    },
+    {
+      header: 'Balance',
+      key: 'balance',
+      align: 'right',
+      render: (val) => (
+        <span className="tabular-nums font-medium">{formatCurrency(val)}</span>
+      )
+    },
+    ...(canEdit ? [{
+      header: 'Actions',
+      key: 'actions',
+      align: 'right',
+      render: (_, row) => (
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
+        </div>
+      )
+    }] : [])
   ];
 
   const filteredData = accounts.filter(acc => 
@@ -66,7 +108,9 @@ export function Accounts() {
           <p className={styles.subtitle}>Manage your accounting ledger accounts.</p>
         </div>
         <div className={styles.actions}>
-          <Button icon={Plus} onClick={() => setIsModalOpen(true)}>Add Account</Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => { setEditingAccount(null); setIsModalOpen(true); }}>Add Account</Button>
+          </RoleGuard>
         </div>
       </div>
 

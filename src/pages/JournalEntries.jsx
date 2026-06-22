@@ -3,12 +3,14 @@ import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Table } from '../components/ui/Table';
-import { Plus, Trash2, CheckCircle2, AlertCircle, Save, ArrowLeft, Edit2 } from 'lucide-react';
+import { Plus, Trash2, CheckCircle2, AlertCircle, Save, ArrowLeft, Edit2, Download } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { RoleGuard } from '../components/RoleGuard';
 import styles from './JournalEntries.module.css';
 
 export function JournalEntries() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [accounts, setAccounts] = useState([]);
   const [journalHistory, setJournalHistory] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -185,7 +187,7 @@ export function JournalEntries() {
         return <span className="tabular-nums">${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>;
       }
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
@@ -195,7 +197,7 @@ export function JournalEntries() {
           <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(journal.id)} style={{ color: 'var(--color-red)' }} />
         </div>
       )
-    }
+    }] : [])
   ];
 
   if (!showForm) {
@@ -207,7 +209,9 @@ export function JournalEntries() {
             <p className={styles.subtitle}>View your accounting history.</p>
           </div>
           <div className={styles.actions}>
-            <Button icon={Plus} onClick={() => { resetForm(); setShowForm(true); }}>New Journal Entry</Button>
+            <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+              <Button icon={Plus} onClick={() => { resetForm(); setShowForm(true); }}>New Journal Entry</Button>
+            </RoleGuard>
           </div>
         </div>
 

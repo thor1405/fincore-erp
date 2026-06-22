@@ -8,11 +8,13 @@ import { Input } from '../components/ui/Input';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { EmployeeModal } from '../components/EmployeeModal';
+import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
 import styles from './Payroll.module.css';
 
 export function Payroll() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const { formatCurrency } = useSettings();
   const [employees, setEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -126,17 +128,17 @@ export function Payroll() {
       sortable: true,
       render: (val) => <Badge variant={val === 'Active' ? 'success' : 'default'}>{val}</Badge>
     },
-    {
+    ...(canEdit ? [{
       header: 'Actions',
       key: 'actions',
       align: 'right',
-      render: (_, employee) => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-          <Button variant="ghost" size="sm" icon={Edit2} onClick={() => handleEdit(employee)} />
-          <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(employee.id)} style={{ color: 'var(--color-red)' }} />
+      render: (_, row) => (
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
         </div>
       )
-    }
+    }] : [])
   ];
 
   const handleExportExcel = () => {
@@ -171,10 +173,14 @@ export function Payroll() {
         </div>
         <div className={styles.actions}>
           <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || employees.length === 0}>Export to Excel</Button>
-          <Button icon={UserPlus} onClick={() => { setEditingEmployee(null); setIsModalOpen(true); }}>Add Employee</Button>
-          <Button icon={PlayCircle} onClick={handleRunPayroll} disabled={isProcessing || employees.length === 0} style={{ backgroundColor: 'var(--color-indigo)', color: '#fff', borderColor: 'var(--color-indigo)' }}>
-            {isProcessing ? 'Processing...' : 'Run Payroll'}
-          </Button>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={Plus} onClick={() => { setEditingEmployee(null); setIsModalOpen(true); }}>Add Employee</Button>
+          </RoleGuard>
+          <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button icon={PlayCircle} onClick={handleRunPayroll} disabled={isProcessing || employees.length === 0} style={{ backgroundColor: 'var(--color-indigo)', color: '#fff', borderColor: 'var(--color-indigo)' }}>
+              {isProcessing ? 'Processing...' : 'Run Payroll'}
+            </Button>
+          </RoleGuard>
         </div>
       </div>
 

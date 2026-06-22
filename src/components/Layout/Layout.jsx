@@ -316,7 +316,12 @@ export function Layout() {
               {dropdownOpen && (
                 <div className={styles.dropdown}>
                   <div className={styles.dropdownHeader}>
-                    <p className={styles.dropdownName}>{user?.name}</p>
+                    <p className={styles.dropdownName}>
+                      {user?.name}
+                      {user?.role === 'Viewer' && (
+                        <span style={{ marginLeft: '8px', fontSize: '0.7rem', padding: '2px 6px', backgroundColor: 'var(--color-amber)', color: 'white', borderRadius: '4px' }}>Viewer</span>
+                      )}
+                    </p>
                     <p className={styles.dropdownEmail}>{user?.email}</p>
                   </div>
                   <button className={styles.dropdownItem} onClick={() => {
