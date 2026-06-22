@@ -16,6 +16,7 @@ export function Payments() {
   const { formatCurrency } = useSettings();
   const [payments, setPayments] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,11 +93,13 @@ export function Payments() {
     }] : [])
   ];
 
-  const filteredData = payments.filter(p => 
-    p.recipient.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.method.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.status.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = payments.filter(p => {
+    const matchesSearch = p.recipient.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.method.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.status.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'All' ? true : p.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className={`${styles.container} animate-fade-in`}>
@@ -120,7 +123,16 @@ export function Payments() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button variant="secondary" icon={Filter}>Status: All</Button>
+        <select 
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
+        >
+          <option value="All">Status: All</option>
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+          <option value="Failed">Failed</option>
+        </select>
       </div>
 
       {isLoading ? (

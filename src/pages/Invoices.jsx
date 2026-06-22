@@ -17,6 +17,7 @@ export function Invoices() {
   const { formatCurrency } = useSettings();
   const [invoices, setInvoices] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -146,11 +147,13 @@ export function Invoices() {
     XLSX.writeFile(wb, 'Invoices.xlsx');
   };
 
-  const filteredData = invoices.filter(inv => 
-    inv.invoiceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    inv.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    inv.status.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = invoices.filter(inv => {
+    const matchesSearch = inv.invoiceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inv.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inv.status.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'All' ? true : inv.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className={`${styles.container} animate-fade-in`}>
@@ -175,7 +178,17 @@ export function Invoices() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button variant="secondary" icon={Filter}>Status: All</Button>
+        <select 
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
+        >
+          <option value="All">Status: All</option>
+          <option value="Draft">Draft</option>
+          <option value="Sent">Sent</option>
+          <option value="Paid">Paid</option>
+          <option value="Overdue">Overdue</option>
+        </select>
       </div>
 
       {isLoading ? (

@@ -14,6 +14,7 @@ export function Vendors() {
   const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [vendors, setVendors] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,11 +80,13 @@ export function Vendors() {
     }] : [])
   ];
 
-  const filteredData = vendors.filter(v => 
-    v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    v.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    v.contact.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = vendors.filter(v => {
+    const matchesSearch = v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      v.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      v.contact.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'All' ? true : v.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className={`${styles.container} animate-fade-in`}>
@@ -107,7 +110,15 @@ export function Vendors() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button variant="secondary" icon={Filter}>Status: All</Button>
+        <select 
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
+        >
+          <option value="All">Status: All</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
       </div>
 
       {isLoading ? (
