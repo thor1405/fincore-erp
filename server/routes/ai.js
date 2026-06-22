@@ -13,6 +13,15 @@ router.get('/history', authenticateToken, async (req, res) => {
       orderBy: { createdAt: 'asc' },
       select: { id: true, role: true, content: true, createdAt: true }
     });
+    
+    if (history.length === 0) {
+      return res.json([{
+        id: 'debug-fake-id',
+        role: 'assistant',
+        content: 'DEBUG: The backend is successfully returning history, but your database is empty. If you see this, the connection is working!'
+      }]);
+    }
+    
     res.json(history);
   } catch (error) {
     console.error('Error fetching AI history:', error);
