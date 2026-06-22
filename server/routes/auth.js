@@ -59,13 +59,25 @@ router.post('/register', async (req, res) => {
       }
     });
 
+    // Check if this user is a team member for someone else
+    const teamMember = await prisma.teamMember.findFirst({
+      where: { email: user.email, status: 'Active' }
+    });
+
+    const workspaceId = teamMember ? teamMember.userId : user.id;
+
     // Generate token
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ 
+      userId: workspaceId, 
+      actualUserId: user.id, 
+      email: user.email,
+      role: teamMember ? teamMember.role : 'Owner'
+    }, JWT_SECRET, { expiresIn: '24h' });
 
     res.status(201).json({
       message: 'User created successfully',
       token,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: { id: user.id, email: user.email, name: user.name, role: teamMember ? teamMember.role : 'Owner' }
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -90,8 +102,20 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    // Check if this user is a team member for someone else
+    const teamMember = await prisma.teamMember.findFirst({
+      where: { email: user.email, status: 'Active' }
+    });
+
+    const workspaceId = teamMember ? teamMember.userId : user.id;
+
     // Generate token
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ 
+      userId: workspaceId, 
+      actualUserId: user.id, 
+      email: user.email,
+      role: teamMember ? teamMember.role : 'Owner'
+    }, JWT_SECRET, { expiresIn: '24h' });
 
     await createAuditLog(
       user.id,
@@ -103,7 +127,7 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Logged in successfully',
       token,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: { id: user.id, email: user.email, name: user.name, role: teamMember ? teamMember.role : 'Owner' }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -116,7 +140,7 @@ const { authenticateToken } = require('../middleware/auth');
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.user.userId },
+      where: { id: req.user.actualUserId || req.user.userId },
       select: { id: true, email: true, name: true, createdAt: true }
     });
     
@@ -135,18 +159,18 @@ router.put('/profile', authenticateToken, async (req, res) => {
     
     // Check if email is taken by another user
     const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing && existing.id !== req.user.userId) {
+    if (existing && existing.id !== (req.user.actualUserId || req.user.userId)) {
       return res.status(400).json({ error: 'Email already in use by another account' });
     }
 
     const user = await prisma.user.update({
-      where: { id: req.user.userId },
+      where: { id: req.user.actualUserId || req.user.userId },
       data: { name, email },
       select: { id: true, email: true, name: true }
     });
     
     await createAuditLog(
-      req.user.userId,
+      req.user.actualUserId || req.user.userId,
       'UPDATED_PROFILE',
       'Profile',
       'Updated user profile information'
@@ -165,7 +189,7 @@ router.post('/change-password', authenticateToken, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     
     // Find user
-    const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    const user = await prisma.user.findUnique({ where: { id: req.user.actualUserId || req.user.userId } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -181,12 +205,12 @@ router.post('/change-password', authenticateToken, async (req, res) => {
 
     // Update password
     await prisma.user.update({
-      where: { id: req.user.userId },
+      where: { id: req.user.actualUserId || req.user.userId },
       data: { password: hashedPassword }
     });
 
     await createAuditLog(
-      req.user.userId,
+      req.user.actualUserId || req.user.userId,
       'CHANGED_PASSWORD',
       'Security',
       'User changed their password'
