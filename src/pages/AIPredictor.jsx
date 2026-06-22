@@ -27,14 +27,22 @@ export function AIPredictor() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch('/api/ai/history', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const res = await fetch(`/api/ai/history?t=${Date.now()}`, {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          },
+          cache: 'no-store'
         });
         if (res.ok) {
           const data = await res.json();
+          console.log("Loaded history from DB:", data.length, "messages");
           if (data.length > 0) {
             setMessages(data);
           }
+        } else {
+          console.error("History fetch failed with status:", res.status);
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
