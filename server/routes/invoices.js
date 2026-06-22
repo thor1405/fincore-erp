@@ -51,6 +51,21 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
 
     await triggerInvoiceUpdate(req.user.userId, invoice.invoiceId, invoice.status, invoice.client, invoice.amount);
 
+    if (invoice.status === 'Paid') {
+      await prisma.transaction.create({
+        data: {
+          userId: req.user.userId,
+          date: new Date(),
+          description: `Payment for Invoice ${invoice.invoiceId} (${invoice.client})`,
+          amount: invoice.amount,
+          type: 'Credit',
+          category: 'Sales',
+          status: 'Completed'
+        }
+      });
+      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded payment for invoice ${invoice.invoiceId}`);
+    }
+
     res.status(201).json(invoice);
   } catch (error) {
     console.error('Error creating invoice:', error);
@@ -87,6 +102,21 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       `Updated invoice ${existingInvoice.invoiceId}`
     );
     
+    if (existingInvoice.status !== 'Paid' && status === 'Paid') {
+      await prisma.transaction.create({
+        data: {
+          userId: req.user.userId,
+          date: new Date(),
+          description: `Payment for Invoice ${invoice.invoiceId} (${invoice.client})`,
+          amount: invoice.amount,
+          type: 'Credit',
+          category: 'Sales',
+          status: 'Completed'
+        }
+      });
+      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded payment for invoice ${invoice.invoiceId}`);
+    }
+
     res.json(invoice);
   } catch (error) {
     console.error('Error updating invoice:', error);
@@ -119,6 +149,21 @@ router.patch('/:id/status', authenticateToken, requireWriteAccess, async (req, r
 
     await triggerInvoiceUpdate(req.user.userId, invoice.invoiceId, invoice.status, invoice.client, invoice.amount);
     
+    if (existingInvoice.status !== 'Paid' && status === 'Paid') {
+      await prisma.transaction.create({
+        data: {
+          userId: req.user.userId,
+          date: new Date(),
+          description: `Payment for Invoice ${invoice.invoiceId} (${invoice.client})`,
+          amount: invoice.amount,
+          type: 'Credit',
+          category: 'Sales',
+          status: 'Completed'
+        }
+      });
+      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded payment for invoice ${invoice.invoiceId}`);
+    }
+
     res.json(invoice);
   } catch (error) {
     console.error('Error updating invoice status:', error);
