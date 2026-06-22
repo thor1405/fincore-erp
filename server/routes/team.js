@@ -41,8 +41,9 @@ router.post('/invite', authenticateToken, async (req, res) => {
       `Invited ${email} as ${role}`
     );
 
-    // Generate link
-    const inviteLink = `http://localhost:5173/invite/${member.id}`;
+    // Generate link dynamically based on the request origin
+    const origin = req.headers.origin || req.protocol + '://' + req.get('host');
+    const inviteLink = `${origin}/invite/${member.id}`;
     res.status(201).json({ member, inviteLink });
   } catch (error) {
     console.error('Error inviting team member:', error);
