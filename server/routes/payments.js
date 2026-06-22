@@ -35,6 +35,22 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
         status: status || 'Completed'
       }
     });
+
+    if (payment.status === 'Completed') {
+      await prisma.transaction.create({
+        data: {
+          userId: req.user.userId,
+          date: payment.date,
+          description: `Payment to ${payment.recipient} (${payment.method})`,
+          amount: payment.amount,
+          type: 'Debit',
+          category: 'Operating Expense',
+          status: 'Completed'
+        }
+      });
+      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded expense for payment to ${payment.recipient}`);
+    }
+
     res.status(201).json(payment);
   } catch (error) {
     console.error('Error creating payment:', error);
@@ -71,6 +87,21 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       `Updated payment to ${recipient} for ${amount}`
     );
     
+    if (existingPayment.status !== 'Completed' && status === 'Completed') {
+      await prisma.transaction.create({
+        data: {
+          userId: req.user.userId,
+          date: new Date(),
+          description: `Payment to ${payment.recipient} (${payment.method})`,
+          amount: payment.amount,
+          type: 'Debit',
+          category: 'Operating Expense',
+          status: 'Completed'
+        }
+      });
+      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded expense for payment to ${payment.recipient}`);
+    }
+
     res.json(payment);
   } catch (error) {
     console.error('Error updating payment:', error);
