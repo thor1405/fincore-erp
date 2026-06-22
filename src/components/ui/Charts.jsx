@@ -89,6 +89,7 @@ export function AreaChart({ data, xKey, series, height = 300, valueFormatter }) 
             tickLine={false} 
             axisLine={false} 
             tickFormatter={valueFormatter || ((value) => `$${value}`)} 
+            width={85}
             dx={-10}
           />
           <Tooltip content={<CustomTooltip colors={colors} valueFormatter={valueFormatter} />} />
@@ -133,6 +134,7 @@ export function BarChart({ data, xKey, series, height = 300, valueFormatter }) {
             tickLine={false} 
             axisLine={false} 
             tickFormatter={valueFormatter || ((value) => `$${value}`)} 
+            width={85}
             dx={-10}
           />
           <Tooltip content={<CustomTooltip colors={colors} valueFormatter={valueFormatter} />} cursor={{ fill: 'transparent' }} />
