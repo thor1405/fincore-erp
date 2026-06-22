@@ -123,6 +123,19 @@ router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) =>
       where: { id }
     });
 
+    // Also delete the corresponding auto-generated transaction
+    if (existingPayment.status === 'Completed') {
+      await prisma.transaction.deleteMany({
+        where: {
+          userId: req.user.userId,
+          description: `Payment to ${existingPayment.recipient} (${existingPayment.method})`,
+          amount: existingPayment.amount,
+          type: 'Debit'
+        }
+      });
+      await createAuditLog(req.user.userId, 'DELETED_TRANSACTION', 'Transactions', `Deleted expense transaction for payment to ${existingPayment.recipient}`);
+    }
+
     await createAuditLog(
       req.user.userId,
       'DELETED_PAYMENT',
