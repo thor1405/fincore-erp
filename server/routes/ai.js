@@ -6,9 +6,23 @@ const { createAuditLog } = require('../utils/audit');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+router.get('/history', authenticateToken, async (req, res) => {
+  try {
+    const history = await prisma.aIChatMessage.findMany({
+      where: { userId: req.user.userId },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true, role: true, content: true, createdAt: true }
+    });
+    res.json(history);
+  } catch (error) {
+    console.error('Error fetching AI history:', error);
+    res.status(500).json({ error: 'Failed to fetch AI chat history' });
+  }
+});
+
 router.post('/predict', authenticateToken, async (req, res) => {
   try {
-    const { prompt, history = [] } = req.body;
+    const { prompt } = req.body;
     const userId = req.user.userId;
 
     if (!prompt) {
@@ -83,17 +97,22 @@ Base your predictions and advice ONLY on the context provided above. If they hav
     const { GoogleGenAI } = require('@google/genai');
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+    // Save the user's prompt to the database FIRST
+    await prisma.aIChatMessage.create({
+      data: { userId, role: 'user', content: prompt }
+    });
+
+    // Fetch full history from DB (including the newly saved prompt)
+    const dbHistory = await prisma.aIChatMessage.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' }
+    });
+
     // Format history for Gemini
-    const contents = history.map(msg => ({
+    const contents = dbHistory.map(msg => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }]
     }));
-
-    // Append the new prompt
-    contents.push({
-      role: 'user',
-      parts: [{ text: prompt }]
-    });
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -105,9 +124,14 @@ Base your predictions and advice ONLY on the context provided above. If they hav
 
     const responseText = response.text || "I was unable to generate a prediction at this time.";
 
+    // Save the AI's response to the database
+    const savedResponse = await prisma.aIChatMessage.create({
+      data: { userId, role: 'assistant', content: responseText }
+    });
+
     await createAuditLog(userId, 'AI_PREDICTION_REQUESTED', 'AI', 'User requested an advanced LLM prediction');
 
-    res.json({ response: responseText });
+    res.json({ response: responseText, id: savedResponse.id });
   } catch (error) {
     console.error('Error in AI prediction:', error);
     res.status(500).json({ error: 'Failed to process AI request. Check your API key or network connection.' });

@@ -25,6 +25,25 @@ export function AIPredictor() {
   };
 
   useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('/api/ai/history', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.length > 0) {
+            setMessages(data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load chat history", err);
+      }
+    };
+    if (token) fetchHistory();
+  }, [token]);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
 
@@ -37,22 +56,13 @@ export function AIPredictor() {
     setInput('');
     setIsTyping(true);
 
-    try {
-      const requestPayload = {
-        prompt: userMsg.content,
-        history: messages.filter(m => m.id !== 'welcome').map(m => ({
-          role: m.role,
-          content: m.content
-        }))
-      };
-
       const response = await fetch('/api/ai/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(requestPayload)
+        body: JSON.stringify({ prompt: userMsg.content })
       });
       
       const data = await response.json();
