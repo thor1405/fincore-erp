@@ -6,6 +6,10 @@ const { createAuditLog } = require('../utils/audit');
 const router = express.Router();
 const prisma = new PrismaClient();
 
+router.get('/debug', (req, res) => {
+  res.json({ message: "BACKEND_IS_V3" });
+});
+
 router.get('/history', authenticateToken, async (req, res) => {
   try {
     const history = await prisma.aIChatMessage.findMany({
