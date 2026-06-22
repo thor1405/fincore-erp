@@ -35,14 +35,32 @@ const initCronJobs = () => {
     console.log('🕒 Running Weekly Financial Summary generation...');
     try {
       const users = await prisma.user.findMany();
+      const lastWeek = new Date();
+      lastWeek.setDate(lastWeek.getDate() - 7);
+
       for (const user of users) {
-        // Aggregate weekly data (mock logic for demo purposes)
+        // Fetch actual transactions for the last 7 days
+        const recentTx = await prisma.transaction.findMany({
+          where: {
+            userId: user.id,
+            date: { gte: lastWeek },
+            status: 'Completed'
+          }
+        });
+
+        let revenue = 0;
+        let expenses = 0;
+
+        recentTx.forEach(t => {
+          if (t.type === 'Credit') revenue += t.amount;
+          if (t.type === 'Debit') expenses += t.amount;
+        });
+
         const weeklyData = {
-          revenue: (Math.random() * 5000 + 1000).toFixed(2),
-          expenses: (Math.random() * 3000 + 500).toFixed(2),
-          cashFlow: 0
+          revenue: revenue.toFixed(2),
+          expenses: expenses.toFixed(2),
+          cashFlow: (revenue - expenses).toFixed(2)
         };
-        weeklyData.cashFlow = (weeklyData.revenue - weeklyData.expenses).toFixed(2);
 
         await triggerWeeklySummary(user.id, weeklyData);
       }
