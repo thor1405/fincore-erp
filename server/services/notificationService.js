@@ -66,8 +66,9 @@ const triggerInvoiceUpdate = async (userId, invoiceId, status, clientName, amoun
   if (!settings) return;
 
   if (settings.emailInvoices) {
+    const formattedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency }).format(amount);
     const emailSubject = `Invoice Update: ${invoiceId}`;
-    const emailBody = `Hello ${settings.user.name},\n\nYour invoice ${invoiceId} for client ${clientName} (Amount: $${amount}) is now marked as: ${status}.\n\nBest,\nFinCore Billing Team`;
+    const emailBody = `Hello ${settings.user.name},\n\nYour invoice ${invoiceId} for client ${clientName} (Amount: ${formattedAmount}) is now marked as: ${status}.\n\nBest,\nFinCore Billing Team`;
     await sendEmailMock(settings.user.email, emailSubject, emailBody);
   }
 };
@@ -81,10 +82,11 @@ const triggerLargeTransactionAlert = async (userId, transactionDesc, amount) => 
   if (!settings) return;
 
   if (settings.pushApprovals) {
+    const formattedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency }).format(amount);
     await createInAppNotification(
       userId,
       'Large Transaction Needs Approval',
-      `A transaction for "${transactionDesc}" amounting to $${amount.toFixed(2)} was just created and may require approval.`,
+      `A transaction for "${transactionDesc}" amounting to ${formattedAmount} was just created and may require approval.`,
       'alert'
     );
   }
@@ -117,8 +119,9 @@ const triggerWeeklySummary = async (userId, reportData) => {
   if (!settings) return;
 
   if (settings.emailReports) {
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency });
     const emailSubject = 'Your Weekly FinCore Financial Summary';
-    const emailBody = `Hello ${settings.user.name},\n\nHere is your financial digest for the week:\n\nTotal Revenue: $${reportData.revenue}\nTotal Expenses: $${reportData.expenses}\nNet Cash Flow: $${reportData.cashFlow}\n\nLog in to your dashboard to see more details.\n\nBest,\nFinCore Team`;
+    const emailBody = `Hello ${settings.user.name},\n\nHere is your financial digest for the week:\n\nTotal Revenue: ${formatter.format(reportData.revenue)}\nTotal Expenses: ${formatter.format(reportData.expenses)}\nNet Cash Flow: ${formatter.format(reportData.cashFlow)}\n\nLog in to your dashboard to see more details.\n\nBest,\nFinCore Team`;
     await sendEmailMock(settings.user.email, emailSubject, emailBody);
   }
 };

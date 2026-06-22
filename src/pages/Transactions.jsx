@@ -3,7 +3,7 @@ import { Table } from '../components/ui/Table';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Download, Filter, Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { Download, Filter, Plus, Search, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { TransactionModal } from '../components/TransactionModal';
@@ -72,6 +72,32 @@ export function Transactions() {
     setIsModalOpen(true);
   };
 
+  const handleApprove = async (id) => {
+    try {
+      const response = await fetch(`/api/transactions/${id}/approve`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) fetchTransactions();
+    } catch (err) {
+      console.error('Failed to approve transaction', err);
+    }
+  };
+
+  const handleReject = async (id) => {
+    if (window.confirm('Are you sure you want to reject this transaction?')) {
+      try {
+        const response = await fetch(`/api/transactions/${id}/reject`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) fetchTransactions();
+      } catch (err) {
+        console.error('Failed to reject transaction', err);
+      }
+    }
+  };
+
   const columns = [
     { header: 'Date', key: 'date', sortable: true },
     { header: 'Description', key: 'description', sortable: true },
@@ -106,6 +132,24 @@ export function Transactions() {
       align: 'right',
       render: (_, row) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          {row.status === 'Pending Approval' && ['Owner', 'Admin'].includes(user?.role) && (
+            <>
+              <button 
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-emerald)' }}
+                onClick={() => handleApprove(row.id)}
+                title="Approve"
+              >
+                <CheckCircle size={16} />
+              </button>
+              <button 
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }}
+                onClick={() => handleReject(row.id)}
+                title="Reject"
+              >
+                <XCircle size={16} />
+              </button>
+            </>
+          )}
           <button 
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
             onClick={() => handleEdit(row)}

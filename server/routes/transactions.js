@@ -26,15 +26,25 @@ router.get('/', authenticateToken, async (req, res) => {
 router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { description, amount, type, category, status, date } = req.body;
+    
+    // Check user settings for approval workflow
+    const settings = await prisma.settings.findUnique({ where: { userId: req.user.userId } });
+    let finalStatus = status || 'Completed';
+    
+    const parsedAmount = parseFloat(amount);
+    
+    if (parsedAmount > 10000 && settings?.pushApprovals) {
+      finalStatus = 'Pending Approval';
+    }
 
     const transaction = await prisma.transaction.create({
       data: {
         userId: req.user.userId,
         description,
-        amount: parseFloat(amount),
+        amount: parsedAmount,
         type,
         category,
-        status: status || 'Completed',
+        status: finalStatus,
         date: date ? new Date(date) : new Date(),
       },
     });
@@ -46,8 +56,8 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
       `Created ${type} transaction for ${amount} (${description})`
     );
 
-    if (parseFloat(amount) > 10000) {
-      await triggerLargeTransactionAlert(req.user.userId, description, parseFloat(amount));
+    if (parsedAmount > 10000 && settings?.pushApprovals) {
+      await triggerLargeTransactionAlert(req.user.userId, description, parsedAmount);
     }
 
     res.status(201).json(transaction);
@@ -155,6 +165,64 @@ router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) =>
   } catch (error) {
     console.error('Error deleting transaction:', error);
     res.status(500).json({ error: 'Failed to delete transaction' });
+  }
+});
+
+// Approve a transaction
+router.post('/:id/approve', authenticateToken, requireWriteAccess, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const tx = await prisma.transaction.findUnique({ where: { id } });
+    if (!tx || tx.userId !== req.user.userId) {
+      return res.status(404).json({ error: 'Transaction not found or unauthorized' });
+    }
+
+    const transaction = await prisma.transaction.update({
+      where: { id },
+      data: { status: 'Completed' }
+    });
+
+    await createAuditLog(
+      req.user.userId,
+      'APPROVED_TRANSACTION',
+      'Transactions',
+      `Approved transaction ${transaction.id} for ${transaction.amount}`
+    );
+
+    res.json(transaction);
+  } catch (error) {
+    console.error('Error approving transaction:', error);
+    res.status(500).json({ error: 'Failed to approve transaction' });
+  }
+});
+
+// Reject a transaction
+router.post('/:id/reject', authenticateToken, requireWriteAccess, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const tx = await prisma.transaction.findUnique({ where: { id } });
+    if (!tx || tx.userId !== req.user.userId) {
+      return res.status(404).json({ error: 'Transaction not found or unauthorized' });
+    }
+
+    const transaction = await prisma.transaction.update({
+      where: { id },
+      data: { status: 'Rejected' }
+    });
+
+    await createAuditLog(
+      req.user.userId,
+      'REJECTED_TRANSACTION',
+      'Transactions',
+      `Rejected transaction ${transaction.id} for ${transaction.amount}`
+    );
+
+    res.json(transaction);
+  } catch (error) {
+    console.error('Error rejecting transaction:', error);
+    res.status(500).json({ error: 'Failed to reject transaction' });
   }
 });
 
