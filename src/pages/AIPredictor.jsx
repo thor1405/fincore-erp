@@ -27,7 +27,7 @@ export function AIPredictor() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`/api/ai/history?t=${Date.now()}`, {
+        const res = await fetch(`/api/ai/sync-chat?t=${Date.now()}`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-cache',

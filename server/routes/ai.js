@@ -10,7 +10,7 @@ router.get('/debug', (req, res) => {
   res.json({ message: "BACKEND_IS_V3" });
 });
 
-router.get('/history', authenticateToken, async (req, res) => {
+router.get('/sync-chat', authenticateToken, async (req, res) => {
   try {
     const history = await prisma.aIChatMessage.findMany({
       where: { userId: req.user.userId },
