@@ -72,7 +72,7 @@ export function SettingsProvider({ children }) {
   // Utility to format numbers according to the global currency
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return '';
-    return `${currencySymbol}${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    return `${currencySymbol}${amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
   };
 
   return (

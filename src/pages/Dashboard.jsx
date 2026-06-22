@@ -70,17 +70,19 @@ export function Dashboard() {
   };
 
   const renderKPI = (title, metric, invertColors = false) => {
-    const isUp = metric.growth !== null && metric.growth >= 0;
-    let trendColor = 'neutral';
+    let badgeColor = 'neutral';
+    let sparklineColor = invertColors ? 'red' : 'emerald';
     let icon = null;
     let badgeContent = 'N/A';
     
     if (metric.growth !== null) {
       if (metric.growth > 0) {
-        trendColor = invertColors ? 'down' : 'up';
+        badgeColor = invertColors ? 'down' : 'up';
+        sparklineColor = invertColors ? 'red' : 'emerald';
         icon = <ArrowUpRight size={14} />;
       } else if (metric.growth < 0) {
-        trendColor = invertColors ? 'up' : 'down';
+        badgeColor = invertColors ? 'up' : 'down';
+        sparklineColor = invertColors ? 'emerald' : 'red';
         icon = <ArrowDownRight size={14} />;
       }
       badgeContent = <>{icon} {Math.abs(metric.growth).toFixed(1)}%</>;
@@ -91,7 +93,7 @@ export function Dashboard() {
         <CardContent className={styles.kpiCard}>
           <div className={styles.kpiTop}>
             <h3 className={styles.kpiTitle}>{title}</h3>
-            <div className={`${styles.kpiGrowthBadge} ${styles[trendColor]}`}>
+            <div className={`${styles.kpiGrowthBadge} ${styles[badgeColor]}`}>
               {badgeContent}
             </div>
           </div>
@@ -102,7 +104,7 @@ export function Dashboard() {
             <LineChart 
               data={metric.sparkline} 
               xKey="index" 
-              series={[{ dataKey: 'value', color: trendColor === 'up' ? 'emerald' : trendColor === 'down' ? 'red' : 'blue' }]} 
+              series={[{ dataKey: 'value', color: sparklineColor }]} 
               height={40} 
             />
           </div>
