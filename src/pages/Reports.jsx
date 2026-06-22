@@ -117,6 +117,7 @@ export function Reports() {
   };
 
   const getHealthStatus = (score) => {
+    if (score === 100) return { label: 'Excellent', class: styles.healthPerfect };
     if (score >= 90) return { label: 'Excellent', class: styles.healthExcellent };
     if (score >= 70) return { label: 'Good', class: styles.healthGood };
     if (score >= 50) return { label: 'Warning', class: styles.healthWarning };
@@ -176,6 +177,7 @@ export function Reports() {
                       { dataKey: 'Profit', name: 'Net Profit', color: 'indigo' }
                     ]} 
                     height={300} 
+                    valueFormatter={formatCurrency}
                   />
                 </CardContent>
               </Card>
@@ -269,6 +271,7 @@ export function Reports() {
                     xKey="name" 
                     series={[{ dataKey: 'value', name: 'Amount', color: 'red' }]} 
                     height={250} 
+                    valueFormatter={formatCurrency}
                   />
                 </CardContent>
               </Card>
