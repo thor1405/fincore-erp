@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireWriteAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
@@ -21,7 +22,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create a new transaction
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { description, amount, type, category, status, date } = req.body;
 
@@ -52,7 +53,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Update a transaction
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
     const { description, amount, type, category, status, date } = req.body;
@@ -109,7 +110,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a transaction
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
 

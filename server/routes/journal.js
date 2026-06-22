@@ -1,6 +1,8 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireWriteAccess } = require('../middleware/rbac');
+const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -27,7 +29,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create a journal entry
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { date, referenceNo, memo, lines } = req.body;
 
@@ -67,7 +69,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Update a journal entry
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
     const { date, referenceNo, memo, lines } = req.body;
@@ -118,7 +120,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a journal entry
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
 

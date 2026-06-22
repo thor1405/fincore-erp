@@ -1,6 +1,8 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireWriteAccess } = require('../middleware/rbac');
+const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -20,7 +22,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create a payment
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { date, amount, recipient, method, status } = req.body;
     const payment = await prisma.payment.create({
@@ -41,7 +43,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Update a payment
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
     const { date, amount, recipient, method, status } = req.body;
@@ -77,7 +79,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a payment
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
 

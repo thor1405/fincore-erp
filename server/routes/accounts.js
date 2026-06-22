@@ -1,6 +1,8 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireWriteAccess } = require('../middleware/rbac');
+const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -20,7 +22,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create account
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { name, type } = req.body;
     const account = await prisma.account.create({

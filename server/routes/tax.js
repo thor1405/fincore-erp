@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireWriteAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
@@ -74,7 +75,7 @@ router.put('/rate', authenticateToken, async (req, res) => {
 });
 
 // Record a new tax payment
-router.post('/payment', authenticateToken, async (req, res) => {
+router.post('/payment', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { amount, date, type, description } = req.body;
 

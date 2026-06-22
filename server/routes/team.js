@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireAdminAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
@@ -20,7 +21,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Invite a new team member
-router.post('/invite', authenticateToken, async (req, res) => {
+router.post('/invite', authenticateToken, requireAdminAccess, async (req, res) => {
   try {
     const { name, email, role } = req.body;
     

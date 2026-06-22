@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireAdminAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
@@ -31,7 +32,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Update settings
-router.put('/', authenticateToken, async (req, res) => {
+router.put('/', authenticateToken, requireAdminAccess, async (req, res) => {
   try {
     const { 
       companyName, taxId, email, phone, address, city, state, currency,

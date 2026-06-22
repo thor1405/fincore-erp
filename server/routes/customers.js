@@ -1,6 +1,8 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
+const { requireWriteAccess } = require('../middleware/rbac');
+const { createAuditLog } = require('../utils/audit');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -20,7 +22,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create a customer
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { name, email, phone, status } = req.body;
     const customer = await prisma.customer.create({
@@ -40,7 +42,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Update a customer
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, phone, status } = req.body;
@@ -63,7 +65,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a customer
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {
     const { id } = req.params;
 
