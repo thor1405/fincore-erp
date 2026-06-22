@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { JWT_SECRET } = require('../middleware/auth');
 const { createAuditLog } = require('../utils/audit');
+const { triggerSecurityAlert } = require('../services/notificationService');
 const { authenticator } = require('otplib');
 const qrcode = require('qrcode');
 
@@ -347,6 +348,7 @@ router.post('/2fa/verify', authenticateToken, async (req, res) => {
     });
     
     await createAuditLog(userId, 'ENABLED_2FA', 'Security', 'User enabled Two-Factor Authentication');
+    await triggerSecurityAlert(userId, 'Two-Factor Authentication was enabled on your account.');
     
     res.json({ message: '2FA enabled successfully' });
   } catch (error) {
@@ -385,6 +387,7 @@ router.post('/2fa/disable', authenticateToken, async (req, res) => {
     });
     
     await createAuditLog(userId, 'DISABLED_2FA', 'Security', 'User disabled Two-Factor Authentication');
+    await triggerSecurityAlert(userId, 'Two-Factor Authentication was disabled on your account.');
     
     res.json({ message: '2FA disabled successfully' });
   } catch (error) {

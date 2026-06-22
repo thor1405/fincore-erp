@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
 const { requireWriteAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
+const { triggerInvoiceUpdate } = require('../services/notificationService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -47,6 +48,8 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
       'Invoices',
       `Created invoice ${invoiceId} for ${client}`
     );
+
+    await triggerInvoiceUpdate(req.user.userId, invoice.invoiceId, invoice.status, invoice.client, invoice.amount);
 
     res.status(201).json(invoice);
   } catch (error) {
@@ -111,8 +114,10 @@ router.patch('/:id/status', authenticateToken, requireWriteAccess, async (req, r
       req.user.userId,
       'UPDATED_INVOICE_STATUS',
       'Invoices',
-      `Marked invoice ${existingInvoice.invoiceId} as ${status}`
+      `Updated invoice ${invoice.invoiceId} status to ${status}`
     );
+
+    await triggerInvoiceUpdate(req.user.userId, invoice.invoiceId, invoice.status, invoice.client, invoice.amount);
     
     res.json(invoice);
   } catch (error) {

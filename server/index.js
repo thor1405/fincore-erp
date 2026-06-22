@@ -19,6 +19,7 @@ const teamRoutes = require('./routes/team');
 const taxRoutes = require('./routes/tax');
 const aiRoutes = require('./routes/ai');
 const notificationRoutes = require('./routes/notifications');
+const { initCronJobs } = require('./cron');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -46,6 +47,9 @@ app.use('/api/team', teamRoutes);
 app.use('/api/tax', taxRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+// Initialize Background Jobs
+initCronJobs();
 
 // Health check
 app.get('/api/health', (req, res) => {

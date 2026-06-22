@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
 const { requireWriteAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
+const { triggerLargeTransactionAlert } = require('../services/notificationService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -44,6 +45,10 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
       'Transactions',
       `Created ${type} transaction for ${amount} (${description})`
     );
+
+    if (parseFloat(amount) > 10000) {
+      await triggerLargeTransactionAlert(req.user.userId, description, parseFloat(amount));
+    }
 
     res.status(201).json(transaction);
   } catch (error) {
