@@ -92,10 +92,30 @@ router.get('/', authenticateToken, async (req, res) => {
       if (t.type === 'Debit') prevExpenses += Math.abs(t.amount);
     });
 
+    // Cash should be all-time sum, Profit is just current period
+    const allTx = await prisma.transaction.findMany({
+      where: { userId, status: 'Completed' }
+    });
+    let allTimeRevenue = 0;
+    let allTimeExpenses = 0;
+    allTx.forEach(t => {
+      if (t.type === 'Credit') allTimeRevenue += t.amount;
+      if (t.type === 'Debit') allTimeExpenses += Math.abs(t.amount);
+    });
+
     const profit = revenue - expenses;
-    const cash = profit; 
+    const cash = allTimeRevenue - allTimeExpenses; 
     const prevProfit = prevRevenue - prevExpenses;
-    const prevCash = prevProfit;
+    
+    // For cash growth, we need the cash balance at the end of the previous period
+    const prevCashTx = allTx.filter(t => t.date < prevEndDate);
+    let prevAllTimeRevenue = 0;
+    let prevAllTimeExpenses = 0;
+    prevCashTx.forEach(t => {
+      if (t.type === 'Credit') prevAllTimeRevenue += t.amount;
+      if (t.type === 'Debit') prevAllTimeExpenses += Math.abs(t.amount);
+    });
+    const prevCash = prevAllTimeRevenue - prevAllTimeExpenses;
 
     const calcGrowth = (curr, prev) => {
       if (prev === 0) return null;
