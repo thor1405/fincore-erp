@@ -50,7 +50,7 @@ router.post('/predict', authenticateToken, async (req, res) => {
 
     // Fetch transactions to build historical context
     const transactions = await prisma.transaction.findMany({
-      where: { userId },
+      where: { userId, status: 'Completed' },
       orderBy: { date: 'asc' }
     });
 

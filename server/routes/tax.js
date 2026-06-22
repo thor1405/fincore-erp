@@ -18,9 +18,17 @@ router.get('/summary', authenticateToken, async (req, res) => {
     });
     const taxRate = settings?.estimatedTaxRate || 20;
 
-    // Calculate total net profit
+    // Calculate total net profit for current year
+    const currentYear = new Date().getFullYear();
+    const startOfYear = new Date(currentYear, 0, 1);
+    const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59);
+
     const transactions = await prisma.transaction.findMany({
-      where: { userId }
+      where: {
+        userId,
+        date: { gte: startOfYear, lte: endOfYear },
+        status: 'Completed'
+      }
     });
 
     let totalIncome = 0;

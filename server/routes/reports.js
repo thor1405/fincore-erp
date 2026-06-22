@@ -19,12 +19,12 @@ router.get('/', authenticateToken, async (req, res) => {
     const prevEnd = new Date(currentEnd.getTime() - timeDiff);
 
     const currentTx = await prisma.transaction.findMany({
-      where: { userId, date: { gte: currentStart, lte: currentEnd } },
+      where: { userId, date: { gte: currentStart, lte: currentEnd }, status: 'Completed' },
       orderBy: { date: 'asc' }
     });
 
     const prevTx = await prisma.transaction.findMany({
-      where: { userId, date: { gte: prevStart, lte: prevEnd } }
+      where: { userId, date: { gte: prevStart, lte: prevEnd }, status: 'Completed' }
     });
 
     let revenue = 0, expenses = 0, cogs = 0;
