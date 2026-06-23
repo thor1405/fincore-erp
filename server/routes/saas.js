@@ -42,16 +42,17 @@ router.get('/analyze', authenticateToken, requireWriteAccess, async (req, res) =
       return res.json({ subscriptions: [], totalSaaS: 0, wastedSpend: 0 });
     }
 
-    // Group unique subscriptions to prevent confusing the AI with duplicates
-    const uniqueExpenses = [];
-    const seen = new Set();
+    // Group by description, amount, and date to remove exact accidental duplicates
+    // but preserve distinct charges (like different tiers/add-ons to the same vendor)
+    const uniqueExpensesMap = new Map();
     for (const e of expenses) {
-      const desc = e.description.toLowerCase().trim();
-      if (!seen.has(desc)) {
-        seen.add(desc);
-        uniqueExpenses.push(e);
+      const dateStr = e.date.toISOString().split('T')[0];
+      const key = `${e.description.toLowerCase().trim()}_${e.amount}_${dateStr}`;
+      if (!uniqueExpensesMap.has(key)) {
+        uniqueExpensesMap.set(key, e);
       }
     }
+    const uniqueExpenses = Array.from(uniqueExpensesMap.values());
 
     // Format expenses for the prompt
     const expenseData = uniqueExpenses.map(e => 
@@ -61,10 +62,11 @@ router.get('/analyze', authenticateToken, requireWriteAccess, async (req, res) =
     const systemInstruction = `You are FinCore AI, a top-tier financial auditor and SaaS Leakage Waste Detector.
 Your job is to analyze the provided list of unique software expenses and identify recurring SaaS subscriptions.
 CRITICAL RULES:
-1. You MUST aggressively flag overlapping software tools. If two tools provide similar functionality (e.g., 'fintech' and 'expense', or 'Zoom' and 'Google Workspace'), mark the cheaper one as overlapping.
-2. Set 'isOverlapping' to true for the redundant tool.
-3. Calculate the sum of the monthlyCost of all overlapping (redundant) tools and set it as 'wastedSpend'.
-4. Calculate the sum of all subscriptions and set it as 'totalSaaS'.
+1. If there are multiple distinct charges to the same vendor, COMBINE them into a SINGLE subscription and sum their costs for the 'monthlyCost'. Do not list the same vendor twice.
+2. You MUST aggressively flag overlapping software tools. If two tools provide similar functionality (e.g., 'fintech' and 'expense', or 'Zoom' and 'Google Workspace'), mark the cheaper one as overlapping.
+3. Set 'isOverlapping' to true for the redundant tool.
+4. Calculate the sum of the monthlyCost of all overlapping (redundant) tools and set it as 'wastedSpend'.
+5. Calculate the sum of all subscriptions and set it as 'totalSaaS'.
 
 IMPORTANT: The user's currency is ${userCurrency}. When writing the 'aiExplanation', you MUST use the appropriate symbol or abbreviation for ${userCurrency} instead of the $ sign (unless they use USD).
 
