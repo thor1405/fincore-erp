@@ -25,6 +25,7 @@ import { Reports } from './pages/Reports';
 import { AuditLogs } from './pages/AuditLogs';
 import { Taxes } from './pages/Taxes';
 import { AIPredictor } from './pages/AIPredictor';
+import { SaaSDetector } from './pages/SaaSDetector';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
                   <Route path="reports" element={<Reports />} />
                   <Route path="taxes" element={<Taxes />} />
                   <Route path="ai" element={<AIPredictor />} />
+                  <Route path="saas" element={<SaaSDetector />} />
                   <Route path="audit" element={<AuditLogs />} />
                   <Route path="settings" element={<Settings />} />
                 </Route>

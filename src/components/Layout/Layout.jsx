@@ -12,6 +12,7 @@ import {
   Banknote,
   PieChart,
   ShieldAlert,
+  MonitorOff,
   Settings,
   Bell,
   Search,
@@ -44,6 +45,7 @@ const navItems = [
   { icon: Banknote, label: 'Payroll', path: '/payroll' },
   { icon: PieChart, label: 'Reports', path: '/reports' },
   { icon: FileText, label: 'Taxes', path: '/taxes' },
+  { icon: MonitorOff, label: 'SaaS Leakage', path: '/saas' },
   { icon: Sparkles, label: 'AI Predictor', path: '/ai' },
   { icon: ShieldAlert, label: 'Audit Logs', path: '/audit' },
 ];
