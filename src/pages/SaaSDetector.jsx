@@ -11,7 +11,13 @@ export function SaaSDetector() {
   const { token } = useAuth();
   const { formatCurrency } = useSettings();
   const [isScanning, setIsScanning] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(() => {
+    const saved = localStorage.getItem('fincore_saas_result');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return null; }
+    }
+    return null;
+  });
   const [error, setError] = useState(null);
 
   const handleScan = async () => {
@@ -28,6 +34,7 @@ export function SaaSDetector() {
       }
       
       setResult(data);
+      localStorage.setItem('fincore_saas_result', JSON.stringify(data));
     } catch (err) {
       setError(err.message);
     } finally {
