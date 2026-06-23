@@ -74,7 +74,7 @@ export function SaaSDetector() {
           <h2 className={styles.emptyTitle}>Detect Wasted Subscription Spend</h2>
           <p className={styles.emptyDesc}>
             Our AI will analyze your expense history to find recurring subscriptions, 
-            calculate your total monthly SaaS spend, and flag overlapping tools (e.g. paying for both Zoom and Google Workspace).
+            calculate your total monthly SaaS spend, and flag overlapping tools (e.g. paying for both QuickBooks and Xero, or multiple redundant payment processors).
           </p>
           <Button size="lg" onClick={handleScan} icon={Sparkles}>
             Run AI SaaS Audit
