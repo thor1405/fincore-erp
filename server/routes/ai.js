@@ -22,7 +22,7 @@ router.get('/sync-chat', authenticateToken, async (req, res) => {
       return res.json([{
         id: 'debug-fake-id',
         role: 'assistant',
-        content: 'DEBUG: The backend is successfully returning history, but your database is empty. If you see this, the connection is working!'
+        content: 'Hello! I am FinCore AI, your intelligent financial advisor. How can I help you analyze your finances today?'
       }]);
     }
     
