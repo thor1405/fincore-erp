@@ -35,6 +35,9 @@ router.get('/analyze', authenticateToken, requireWriteAccess, async (req, res) =
       }
     });
 
+    const userSettings = await prisma.settings.findUnique({ where: { userId } });
+    const userCurrency = userSettings?.currency || 'USD';
+
     if (expenses.length === 0) {
       return res.json({ subscriptions: [], totalSaaS: 0, wastedSpend: 0 });
     }
@@ -47,6 +50,8 @@ router.get('/analyze', authenticateToken, requireWriteAccess, async (req, res) =
     const systemInstruction = `You are FinCore AI, a top-tier financial auditor and SaaS Leakage Waste Detector.
 Your job is to analyze the provided transaction history and identify recurring software subscriptions (SaaS).
 You must also flag ANY overlapping software (e.g. paying for both Zoom and Google Meet/Workspace, or Asana and Jira) and calculate estimated wasted spend.
+
+IMPORTANT: The user's currency is ${userCurrency}. When writing the 'aiExplanation', you MUST use the appropriate symbol or abbreviation for ${userCurrency} instead of the $ sign (unless they use USD).
 
 Return a STRICT JSON object in exactly this format, and nothing else:
 {
