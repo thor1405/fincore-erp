@@ -121,7 +121,11 @@ router.post('/predict', authenticateToken, async (req, res) => {
 - Days of Data: ${daysActive}
 - Average Monthly Projected Revenue: ${monthlyIncome.toFixed(2)}
 - Average Monthly Projected Expenses: ${monthlyExpense.toFixed(2)}
-- Average Monthly Projected Profit: ${monthlyProfit.toFixed(2)}`;
+- Average Monthly Projected Profit: ${monthlyProfit.toFixed(2)}
+
+Recent Transaction Ledger (Last 500 transactions):
+Date | Description | Category | Type | Amount
+${transactions.slice(-500).map(t => `${t.date.toISOString().split('T')[0]} | ${t.description} | ${t.category} | ${t.type} | ${t.amount}`).join('\n')}`;
     }
 
     const systemInstruction = `You are FinCore AI, a professional, intelligent financial advisor integrated into the FinCore ERP system.
