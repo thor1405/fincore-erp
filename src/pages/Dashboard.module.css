@@ -299,7 +299,7 @@
 }
 
 .healthExcellent { color: var(--color-emerald); }
-.healthExcellent::after { border-color: var(--color-emerald); border-left-color: transparent; transform: rotate(45deg); }
+.healthExcellent::after { border-color: var(--color-emerald); }
 
 .healthGood { color: var(--color-blue); }
 .healthGood::after { border-color: var(--color-blue); border-bottom-color: transparent; transform: rotate(135deg); }
