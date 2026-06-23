@@ -60,6 +60,14 @@ router.post('/predict', authenticateToken, async (req, res) => {
     } else {
       let totalIncome = 0;
       let totalExpense = 0;
+      let todayIncome = 0;
+      let todayExpense = 0;
+      let monthIncome = 0;
+      let monthExpense = 0;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
       const firstTx = transactions[0].date;
       const lastTx = transactions[transactions.length - 1].date;
@@ -67,11 +75,23 @@ router.post('/predict', authenticateToken, async (req, res) => {
       const daysActive = Math.max(Math.ceil(timeDiff / (1000 * 3600 * 24)), 1);
 
       transactions.forEach(t => {
-        if (t.type === 'Credit') totalIncome += t.amount;
-        if (t.type === 'Debit') totalExpense += t.amount;
+        const tDate = new Date(t.date);
+        
+        if (t.type === 'Credit') {
+          totalIncome += t.amount;
+          if (tDate >= today) todayIncome += t.amount;
+          if (tDate >= firstDayOfMonth) monthIncome += t.amount;
+        }
+        if (t.type === 'Debit') {
+          totalExpense += t.amount;
+          if (tDate >= today) todayExpense += t.amount;
+          if (tDate >= firstDayOfMonth) monthExpense += t.amount;
+        }
       });
 
       const netProfit = totalIncome - totalExpense;
+      const todayProfit = todayIncome - todayExpense;
+      const monthProfit = monthIncome - monthExpense;
 
       // Fetch user settings for currency symbol
       const settings = await prisma.settings.findUnique({ where: { userId } });
@@ -89,6 +109,12 @@ router.post('/predict', authenticateToken, async (req, res) => {
 
       contextData = `User Financial Summary:
 - Currency: ${currency}
+- Today's Income: ${todayIncome.toFixed(2)}
+- Today's Expenses: ${todayExpense.toFixed(2)}
+- Today's Net Profit: ${todayProfit.toFixed(2)}
+- This Month's Income: ${monthIncome.toFixed(2)}
+- This Month's Expenses: ${monthExpense.toFixed(2)}
+- This Month's Net Profit: ${monthProfit.toFixed(2)}
 - Total Income (All Time): ${totalIncome.toFixed(2)}
 - Total Expenses (All Time): ${totalExpense.toFixed(2)}
 - Net Profit (All Time): ${netProfit.toFixed(2)}
