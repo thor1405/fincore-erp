@@ -156,13 +156,19 @@ export function Payroll() {
     XLSX.writeFile(wb, 'Payroll.xlsx');
   };
 
+  const [departmentFilter, setDepartmentFilter] = useState('All');
+
+  const uniqueDepartments = ['All', ...new Set(employees.map(e => e.department))];
+
   const totalMonthlyPayroll = employees.reduce((sum, emp) => sum + (emp.salary / 12), 0);
 
-  const filteredData = employees.filter(e => 
-    e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.department.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = employees.filter(e => {
+    const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          e.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          e.department.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDept = departmentFilter === 'All' ? true : e.department === departmentFilter;
+    return matchesSearch && matchesDept;
+  });
 
   return (
     <div className={`${styles.container} animate-fade-in`}>
@@ -177,37 +183,37 @@ export function Payroll() {
             <Button icon={Plus} onClick={() => { setEditingEmployee(null); setIsModalOpen(true); }}>Add Employee</Button>
           </RoleGuard>
           <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
-            <Button icon={PlayCircle} onClick={handleRunPayroll} disabled={isProcessing || employees.length === 0} style={{ backgroundColor: 'var(--color-indigo)', color: '#fff', borderColor: 'var(--color-indigo)' }}>
+            <Button icon={PlayCircle} onClick={handleRunPayroll} disabled={isProcessing || employees.length === 0} className={styles.runPayrollBtn}>
               {isProcessing ? 'Processing...' : 'Run Payroll'}
             </Button>
           </RoleGuard>
         </div>
       </div>
 
-      <div className={styles.kpiGrid}>
+      <div className={styles.statsGrid}>
         <Card>
-          <CardContent className={styles.kpiCard}>
-            <p className={styles.kpiTitle}>Total Monthly Payroll</p>
-            <h2 className={`tabular-nums ${styles.kpiValue}`}>{formatCurrency(totalMonthlyPayroll)}</h2>
+          <CardContent className={styles.statCard}>
+            <p className={styles.statLabel}>Total Monthly Payroll</p>
+            <h2 className={`tabular-nums ${styles.statValue}`}>{formatCurrency(totalMonthlyPayroll)}</h2>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className={styles.kpiCard}>
-            <p className={styles.kpiTitle}>Active Employees</p>
-            <h2 className={`tabular-nums ${styles.kpiValue}`}>{employees.filter(e => e.status === 'Active').length}</h2>
+          <CardContent className={styles.statCard}>
+            <p className={styles.statLabel}>Active Employees</p>
+            <h2 className={`tabular-nums ${styles.statValue}`}>{employees.filter(e => e.status === 'Active').length}</h2>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className={styles.kpiCard}>
-            <p className={styles.kpiTitle}>Next Run Date</p>
-            <h2 className={`tabular-nums ${styles.kpiValue}`}>
+          <CardContent className={styles.statCard}>
+            <p className={styles.statLabel}>Next Run Date</p>
+            <h2 className={`tabular-nums ${styles.statValue}`}>
               {payrollStatus.nextRunDate ? new Date(payrollStatus.nextRunDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '...'}
             </h2>
           </CardContent>
         </Card>
       </div>
 
-      <div className={styles.filters} style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+      <div className={styles.filtersBar}>
         <Input 
           icon={Search} 
           placeholder="Search employees..." 
@@ -215,7 +221,15 @@ export function Payroll() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button variant="secondary" icon={Filter}>Department: All</Button>
+        <select 
+          className={styles.departmentSelect} 
+          value={departmentFilter} 
+          onChange={(e) => setDepartmentFilter(e.target.value)}
+        >
+          {uniqueDepartments.map(dept => (
+            <option key={dept} value={dept}>{dept === 'All' ? 'Department: All' : dept}</option>
+          ))}
+        </select>
       </div>
 
       {isLoading ? (

@@ -90,3 +90,53 @@
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+
+.filtersBar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.departmentSelect {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  min-width: 180px;
+}
+
+.departmentSelect:hover {
+  border-color: var(--color-indigo);
+}
+
+.departmentSelect:focus {
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.runPayrollBtn {
+  background: linear-gradient(135deg, var(--color-indigo), var(--color-blue)) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 600;
+  transition: all 0.2s !important;
+  box-shadow: var(--shadow-md);
+}
+
+.runPayrollBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.1);
+}
+
+.runPayrollBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
