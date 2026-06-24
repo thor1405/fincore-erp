@@ -81,12 +81,15 @@ export function CustomerProfile() {
       header: 'Status', 
       key: 'status', 
       sortable: true,
-      render: (val) => {
+      render: (val, row) => {
+        const isPastDue = new Date(row.dueDate).getTime() < new Date().getTime() && val !== 'Paid' && val !== 'Draft';
+        const displayStatus = isPastDue ? 'Overdue' : val;
+
         let variant = 'default';
-        if (val === 'Paid') variant = 'success';
-        if (val === 'Overdue') variant = 'destructive';
-        if (val === 'Sent') variant = 'warning';
-        return <Badge variant={variant}>{val}</Badge>;
+        if (displayStatus === 'Paid') variant = 'success';
+        if (displayStatus === 'Overdue') variant = 'destructive';
+        if (displayStatus === 'Sent') variant = 'warning';
+        return <Badge variant={variant}>{displayStatus}</Badge>;
       }
     }
   ];
