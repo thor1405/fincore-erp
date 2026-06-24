@@ -87,16 +87,19 @@ export function Reports() {
 
   const renderKPI = (title, metric, isCurrency = true, invertColors = false) => {
     if (!metric) return null;
-    const isUp = metric.growth >= 0;
     let trendColor = 'neutral';
     let icon = null;
+    let badgeContent = 'N/A';
     
-    if (metric.growth > 0) {
-      trendColor = invertColors ? 'down' : 'up';
-      icon = <ArrowUpRight size={14} />;
-    } else if (metric.growth < 0) {
-      trendColor = invertColors ? 'up' : 'down';
-      icon = <ArrowDownRight size={14} />;
+    if (metric.growth !== null && metric.growth !== undefined) {
+      if (metric.growth > 0) {
+        trendColor = invertColors ? 'down' : 'up';
+        icon = <ArrowUpRight size={14} />;
+      } else if (metric.growth < 0) {
+        trendColor = invertColors ? 'up' : 'down';
+        icon = <ArrowDownRight size={14} />;
+      }
+      badgeContent = <>{icon} {Math.abs(metric.growth).toFixed(1)}%</>;
     }
 
     return (
@@ -107,9 +110,15 @@ export function Reports() {
             <h2 className={styles.kpiValue}>
               {isCurrency ? formatCurrency(metric.value) : `${metric.value.toFixed(1)}%`}
             </h2>
-            <div className={`${styles.kpiGrowthBadge} ${styles[trendColor]}`}>
-              {icon} {Math.abs(metric.growth).toFixed(1)}%
-            </div>
+            {metric.growth !== null && metric.growth !== undefined ? (
+              <div className={`${styles.kpiGrowthBadge} ${styles[trendColor]}`}>
+                {badgeContent}
+              </div>
+            ) : (
+              <div className={`${styles.kpiGrowthBadge} ${styles.neutral}`}>
+                N/A
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -65,7 +65,7 @@ router.get('/', authenticateToken, async (req, res) => {
     const prevProfit = prevRevenue - prevExpenses;
 
     const calcGrowth = (curr, prev) => {
-      if (prev === 0) return curr > 0 ? 100 : 0;
+      if (prev === 0) return null;
       return ((curr - prev) / prev) * 100;
     };
 
@@ -128,7 +128,7 @@ router.get('/', authenticateToken, async (req, res) => {
         revenue: { value: revenue, growth: calcGrowth(revenue, prevRevenue) },
         expenses: { value: expenses, growth: calcGrowth(expenses, prevExpenses) },
         profit: { value: profit, growth: calcGrowth(profit, prevProfit) },
-        profitMargin: { value: profitMargin, growth: profitMargin - (prevRevenue ? (prevProfit/prevRevenue)*100 : 0) }
+        profitMargin: { value: profitMargin, growth: prevRevenue ? profitMargin - ((prevProfit/prevRevenue)*100) : null }
       },
       metrics: {
         grossMargin,
