@@ -3,7 +3,7 @@ import { Table } from '../components/ui/Table';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Plus, Search, FileText, Filter, Download, Edit2, Trash2, CheckCircle2 } from 'lucide-react';
+import { Plus, Search, FileText, Download, Edit2, Trash2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { InvoiceModal } from '../components/InvoiceModal';
@@ -19,6 +19,8 @@ export function Invoices() {
   const [invoices, setInvoices] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
   const [previewInvoice, setPreviewInvoice] = useState(null);
@@ -134,8 +136,21 @@ export function Invoices() {
     }] : [])
   ];
 
+  const filteredData = invoices.filter(inv => {
+    const matchesSearch = inv.invoiceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inv.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      inv.status.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'All' ? true : inv.status === filterStatus;
+    
+    const invoiceDate = new Date(inv.date).getTime();
+    const isAfterStart = startDate ? invoiceDate >= new Date(startDate).getTime() : true;
+    const isBeforeEnd = endDate ? invoiceDate <= new Date(endDate).getTime() : true;
+
+    return matchesSearch && matchesStatus && isAfterStart && isBeforeEnd;
+  });
+
   const handleExportExcel = () => {
-    const formattedData = invoices.map(inv => ({
+    const formattedData = filteredData.map(inv => ({
       'Invoice ID': inv.invoiceId,
       Client: inv.client,
       Date: inv.date,
@@ -146,16 +161,14 @@ export function Invoices() {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(formattedData);
     XLSX.utils.book_append_sheet(wb, ws, 'Invoices');
-    XLSX.writeFile(wb, 'Invoices.xlsx');
+    let fileName = 'Invoices';
+    if (startDate && endDate) {
+      fileName += `_${startDate}_to_${endDate}`;
+    } else if (startDate) {
+      fileName += `_from_${startDate}`;
+    }
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
   };
-
-  const filteredData = invoices.filter(inv => {
-    const matchesSearch = inv.invoiceId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inv.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inv.status.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === 'All' ? true : inv.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
 
   return (
     <div className={`${styles.container} animate-fade-in`}>
@@ -165,14 +178,14 @@ export function Invoices() {
           <p className={styles.subtitle}>Manage your billing and track payments.</p>
         </div>
         <div className={styles.actions}>
-          <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || invoices.length === 0}>Export</Button>
+          <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || filteredData.length === 0}>Export ({filteredData.length})</Button>
           <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
             <Button icon={Plus} onClick={() => { setEditingInvoice(null); setIsModalOpen(true); }}>Create Invoice</Button>
           </RoleGuard>
         </div>
       </div>
 
-      <div className={styles.filters}>
+      <div className={styles.filters} style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
         <Input 
           icon={Search} 
           placeholder="Search clients or invoice IDs..." 
@@ -180,24 +193,44 @@ export function Invoices() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <select 
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}
-        >
-          <option value="All">Status: All</option>
-          <option value="Draft">Draft</option>
-          <option value="Sent">Sent</option>
-          <option value="Paid">Paid</option>
-          <option value="Overdue">Overdue</option>
-        </select>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <select 
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer', height: '40px' }}
+          >
+            <option value="All">Status: All</option>
+            <option value="Draft">Draft</option>
+            <option value="Sent">Sent</option>
+            <option value="Paid">Paid</option>
+            <option value="Overdue">Overdue</option>
+          </select>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>From</span>
+            <input 
+              type="date" 
+              value={startDate} 
+              onChange={(e) => setStartDate(e.target.value)}
+              style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', height: '40px' }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>To</span>
+            <input 
+              type="date" 
+              value={endDate} 
+              onChange={(e) => setEndDate(e.target.value)}
+              style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', height: '40px' }}
+            />
+          </div>
+        </div>
       </div>
 
       {isLoading ? (
         <div>Loading invoices...</div>
-      ) : invoices.length === 0 ? (
+      ) : filteredData.length === 0 ? (
         <div style={{ padding: '40px', textAlign: 'center', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-lg)' }}>
-          <p>No invoices found. Click "Create Invoice" to get started.</p>
+          <p>No invoices match your filters.</p>
         </div>
       ) : (
         <Table 
