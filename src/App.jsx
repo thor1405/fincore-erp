@@ -21,6 +21,7 @@ import { Accounts } from './pages/Accounts';
 import { Customers } from './pages/Customers';
 import { CustomerProfile } from './pages/CustomerProfile';
 import { Vendors } from './pages/Vendors';
+import { VendorProfile } from './pages/VendorProfile';
 import { Payments } from './pages/Payments';
 import { Reports } from './pages/Reports';
 import { AuditLogs } from './pages/AuditLogs';
@@ -49,6 +50,7 @@ function App() {
                   <Route path="customers" element={<Customers />} />
                   <Route path="customers/:id" element={<CustomerProfile />} />
                   <Route path="vendors" element={<Vendors />} />
+                  <Route path="vendors/:id" element={<VendorProfile />} />
                   <Route path="invoices" element={<Invoices />} />
                   <Route path="budgets" element={<Budgets />} />
                   <Route path="payments" element={<Payments />} />

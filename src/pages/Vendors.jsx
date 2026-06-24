@@ -3,14 +3,16 @@ import { Table } from '../components/ui/Table';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Plus, Search, Filter, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Filter, Edit2, Trash2, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { VendorModal } from '../components/VendorModal';
 import { RoleGuard } from '../components/RoleGuard';
 import styles from './Vendors.module.css';
 
 export function Vendors() {
   const { token, user } = useAuth();
+  const navigate = useNavigate();
   const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [vendors, setVendors] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,7 +60,19 @@ export function Vendors() {
   };
 
   const columns = [
-    { header: 'Name', key: 'name', sortable: true },
+    { 
+      header: 'Name', 
+      key: 'name', 
+      sortable: true,
+      render: (val, row) => (
+        <span 
+          style={{ color: 'var(--color-indigo)', fontWeight: 500, cursor: 'pointer' }}
+          onClick={() => navigate(`/vendors/${row.id}`)}
+        >
+          {val}
+        </span>
+      )
+    },
     { header: 'Category', key: 'category', sortable: true },
     { header: 'Contact', key: 'contact', sortable: false },
     { 
@@ -67,17 +81,22 @@ export function Vendors() {
       sortable: true,
       render: (val) => <Badge variant={val === 'Active' ? 'success' : 'default'}>{val}</Badge>
     },
-    ...(canEdit ? [{
+    {
       header: 'Actions',
       key: 'actions',
       align: 'right',
       render: (_, row) => (
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
-          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
+          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-indigo)' }} onClick={() => navigate(`/vendors/${row.id}`)} title="View Profile"><Eye size={16} /></button>
+          {canEdit && (
+            <>
+              <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => handleEdit(row)} title="Edit"><Edit2 size={16} /></button>
+              <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-red)' }} onClick={() => handleDelete(row.id)} title="Delete"><Trash2 size={16} /></button>
+            </>
+          )}
         </div>
       )
-    }] : [])
+    }
   ];
 
   const filteredData = vendors.filter(v => {
