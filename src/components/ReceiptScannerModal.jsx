@@ -54,8 +54,14 @@ export function ReceiptScannerModal({ isOpen, onClose, onScanComplete }) {
           });
 
           if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error || 'Failed to scan receipt');
+            let errorMessage = 'Failed to scan receipt';
+            try {
+              const errData = await response.json();
+              errorMessage = errData.error || errorMessage;
+            } catch (e) {
+              errorMessage = `Server Error: ${response.status} (File might be too large)`;
+            }
+            throw new Error(errorMessage);
           }
 
           const data = await response.json();
