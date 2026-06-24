@@ -23,6 +23,7 @@ import {
   User,
   HelpCircle,
   Sparkles,
+  Target,
   CheckCircle2,
   AlertCircle,
   Info
@@ -41,6 +42,7 @@ const navItems = [
   { icon: Users, label: 'Customers', path: '/customers' },
   { icon: Building2, label: 'Vendors', path: '/vendors' },
   { icon: FileText, label: 'Invoices', path: '/invoices' },
+  { icon: Target, label: 'Budgets', path: '/budgets' },
   { icon: CreditCard, label: 'Payments', path: '/payments' },
   { icon: Banknote, label: 'Payroll', path: '/payroll' },
   { icon: PieChart, label: 'Reports', path: '/reports' },

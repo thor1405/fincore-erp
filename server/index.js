@@ -20,6 +20,7 @@ const taxRoutes = require('./routes/tax');
 const aiRoutes = require('./routes/ai');
 const notificationRoutes = require('./routes/notifications');
 const saasRoutes = require('./routes/saas');
+const budgetsRoutes = require('./routes/budgets');
 const { initCronJobs } = require('./cron');
 
 const app = express();
@@ -50,6 +51,7 @@ app.use('/api/tax', taxRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/saas', saasRoutes);
+app.use('/api/budgets', budgetsRoutes);
 
 // Initialize Background Jobs
 initCronJobs();

@@ -23,8 +23,9 @@ import { Vendors } from './pages/Vendors';
 import { Payments } from './pages/Payments';
 import { Reports } from './pages/Reports';
 import { AuditLogs } from './pages/AuditLogs';
-import { Taxes } from './pages/Taxes';
-import { AIPredictor } from './pages/AIPredictor';
+import { Tax } from './pages/Tax';
+import { Notifications } from './pages/Notifications';
+import { Budgets } from './pages/Budgets';
 import { SaaSDetector } from './pages/SaaSDetector';
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
                   <Route path="customers" element={<Customers />} />
                   <Route path="vendors" element={<Vendors />} />
                   <Route path="invoices" element={<Invoices />} />
+                  <Route path="budgets" element={<Budgets />} />
                   <Route path="payments" element={<Payments />} />
                   <Route path="payroll" element={<Payroll />} />
                   <Route path="reports" element={<Reports />} />

@@ -33,6 +33,7 @@ model User {
   TaxPayment   TaxPayment[]
   Notification Notification[]
   AIChatMessage AIChatMessage[]
+  Budgets      Budget[]
 }
 
 model Transaction {
@@ -224,4 +225,16 @@ model AIChatMessage {
   role      String   // "user" or "assistant"
   content   String
   createdAt DateTime @default(now())
+}
+
+model Budget {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  category  String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, category])
 }
