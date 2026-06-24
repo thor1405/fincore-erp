@@ -23,8 +23,8 @@ import { Vendors } from './pages/Vendors';
 import { Payments } from './pages/Payments';
 import { Reports } from './pages/Reports';
 import { AuditLogs } from './pages/AuditLogs';
-import { Tax } from './pages/Tax';
-import { Notifications } from './pages/Notifications';
+import { Taxes } from './pages/Taxes';
+import { AIPredictor } from './pages/AIPredictor';
 import { Budgets } from './pages/Budgets';
 import { SaaSDetector } from './pages/SaaSDetector';
 
