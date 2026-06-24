@@ -53,9 +53,7 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'CREATED_TRANSACTION',
       'Transactions',
-      `Created ${type} transaction for ${amount} (${description},
-      req.user.actualUserId || req.user.userId
-    )`
+      `Created ${type} transaction for ${amount} (${description})`, req.user.actualUserId || req.user.userId
     );
 
     if (parsedAmount > 10000 && settings?.pushApprovals) {
@@ -116,9 +114,7 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'UPDATED_TRANSACTION',
       'Transactions',
-      `Updated ${type} transaction for ${amount} (${description},
-      req.user.actualUserId || req.user.userId
-    )`
+      `Updated ${type} transaction for ${amount} (${description})`, req.user.actualUserId || req.user.userId
     );
 
     res.json(transaction);
@@ -162,9 +158,7 @@ router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) =>
       req.user.userId,
       'DELETED_TRANSACTION',
       'Transactions',
-      `Deleted ${transaction.type} transaction for ${transaction.amount} (${transaction.description},
-      req.user.actualUserId || req.user.userId
-    )`
+      `Deleted ${transaction.type} transaction for ${transaction.amount} (${transaction.description})`, req.user.actualUserId || req.user.userId
     );
 
     res.json({ message: 'Transaction deleted successfully' });
