@@ -10,6 +10,7 @@ import styles from './JournalEntries.module.css';
 
 export function JournalEntries() {
   const { token, user } = useAuth();
+  const { formatCurrency } = useSettings();
   const canEdit = ['Owner', 'Admin', 'Editor'].includes(user?.role);
   const [accounts, setAccounts] = useState([]);
   const [journalHistory, setJournalHistory] = useState([]);
@@ -184,7 +185,7 @@ export function JournalEntries() {
       align: 'right',
       render: (lines) => {
         const amount = lines.reduce((sum, line) => sum + line.debit, 0);
-        return <span className="tabular-nums">${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>;
+        return <span className="tabular-nums">{formatCurrency(amount)}</span>;
       }
     },
     ...(canEdit ? [{
@@ -322,11 +323,11 @@ export function JournalEntries() {
             <div className={styles.totalsContainer}>
               <div className={styles.totalsBox}>
                 <span className={styles.totalLabel}>Total Debit</span>
-                <span className={styles.totalValue}>${totalDebit.toFixed(2)}</span>
+                <span className={styles.totalValue}>{formatCurrency(totalDebit)}</span>
               </div>
               <div className={styles.totalsBox}>
                 <span className={styles.totalLabel}>Total Credit</span>
-                <span className={styles.totalValue}>${totalCredit.toFixed(2)}</span>
+                <span className={styles.totalValue}>{formatCurrency(totalCredit)}</span>
               </div>
             </div>
           </div>
@@ -341,7 +342,7 @@ export function JournalEntries() {
           ) : (
             <div className={styles.statusUnbalanced}>
               <AlertCircle size={18} />
-              <span>Out of balance by ${Math.abs(totalDebit - totalCredit).toFixed(2)}. Debits must equal credits.</span>
+              <span>Out of balance by {formatCurrency(Math.abs(totalDebit - totalCredit))}. Debits must equal credits.</span>
             </div>
           )}
         </div>
