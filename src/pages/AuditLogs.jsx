@@ -42,6 +42,7 @@ export function AuditLogs() {
   };
 
   const uniqueUsers = ['All', ...new Set(logs.map(l => l.actor?.name || 'System'))];
+  const uniqueModules = ['All', ...new Set(logs.map(l => l.module))];
 
   const filteredLogs = logs.filter(log => {
     const matchesSearch = log.action.toLowerCase().includes(searchTerm.toLowerCase()) || 
