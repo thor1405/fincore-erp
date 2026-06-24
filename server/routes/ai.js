@@ -247,7 +247,7 @@ Example output:
     res.json(parsedData);
   } catch (error) {
     console.error('Error in AI receipt scanning:', error);
-    res.status(500).json({ error: 'Failed to process receipt image. Please try again.' });
+    res.status(500).json({ error: `Failed to process receipt image. Details: ${error.message}` });
   }
 });
 
