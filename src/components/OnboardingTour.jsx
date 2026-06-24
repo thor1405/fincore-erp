@@ -11,52 +11,67 @@ export function OnboardingTour({ run, setRun }) {
     },
     {
       target: '#tour-sidebar',
-      content: 'This is your main navigation menu. From here you can access all your modules like Accounts, Transactions, Invoices, and Reports.',
+      content: 'Task: Navigating between modules.\n\nThis is your main navigation menu. From here you can access all your core business functions like Accounts, Transactions, Invoices, and Reports.',
       placement: 'right',
     },
     {
       target: 'a[href="/invoices"]',
-      content: 'Manage all your customer invoices here. You can create new invoices, track their status, and automatically monitor overdue payments.',
+      content: 'Task: Invoicing and billing customers.\n\nManage all your customer invoices here. You can create new invoices, track their status, and automatically monitor overdue payments.',
       placement: 'right',
     },
     {
       target: 'a[href="/reports"]',
-      content: 'Access detailed financial reports, including the powerful Accounts Receivable Aging Report to track outstanding customer balances.',
+      content: 'Task: Financial analysis and reporting.\n\nAccess detailed financial reports, including the powerful Accounts Receivable Aging Report to track outstanding customer balances.',
+      placement: 'right',
+    },
+    {
+      target: 'a[href="/saas"]',
+      content: 'Task: Detecting wasted software spend.\n\nRun an AI-powered audit on your transaction history to find hidden overlapping subscriptions, duplicate payments, and wasted SaaS spend.',
+      placement: 'right',
+    },
+    {
+      target: 'a[href="/ai"]',
+      content: 'Task: Intelligent financial forecasting.\n\nAsk FinCore AI any question about your finances. The AI has deep context of your daily profits, expenses, and transaction ledger to give you precise answers.',
+      placement: 'right',
+    },
+    {
+      target: 'a[href="/journal-entries"]',
+      content: 'Task: Advanced manual accounting.\n\nUse double-entry bookkeeping to record complex transactions, correct mistakes across specific accounts, or manage depreciation and loans.',
       placement: 'right',
     },
     {
       target: 'a[href="/settings"]',
-      content: 'Head to Settings to manage your company profile, set up Two-Factor Authentication, and invite new team members to your workspace!',
+      content: 'Task: Configuring system preferences.\n\nHead to Settings to manage your company profile, set up Two-Factor Authentication, and invite new team members to your workspace!',
       placement: 'right',
     },
     {
       target: '#tour-search',
-      content: 'Use the global search bar to quickly find transactions, accounts, or contacts across the entire system.',
+      content: 'Task: Finding specific records instantly.\n\nUse the global search bar to quickly locate transactions, accounts, or contacts across the entire system without navigating through menus.',
       placement: 'bottom',
     },
     {
       target: '#tour-profile',
-      content: 'Click here to edit your profile, update your global currency settings, or log out of the system.',
+      content: 'Task: Managing your user account.\n\nClick here to edit your profile, update your global currency settings, or securely log out of the system.',
       placement: 'bottom-end',
     },
     {
       target: '#tour-dashboard-kpis',
-      content: 'Your Executive Dashboard provides a high-level overview of your Total Revenue, Expenses, Net Profit, and Cash Balance.',
+      content: 'Task: Monitoring key performance indicators.\n\nYour Executive Dashboard provides a high-level, real-time overview of your Total Revenue, Expenses, Net Profit, and Cash Balance.',
       placement: 'bottom',
     },
     {
       target: '#tour-dashboard-charts',
-      content: 'Visualize your cash flow trends and see your top expense categories at a glance.',
+      content: 'Task: Analyzing cash flow trends.\n\nVisualize your historical cash flow trends and see your top expense categories at a glance using interactive charts.',
       placement: 'top',
     },
     {
       target: '#tour-recent-activity',
-      content: 'Keep track of all your latest transactions here without leaving the dashboard.',
+      content: 'Task: Auditing recent system actions.\n\nKeep track of all your latest transactions and system events right from the dashboard to ensure nothing slips past you.',
       placement: 'left',
     },
     {
       target: '#tour-export-btn',
-      content: 'Need your data offline? Use the Export to Excel button to instantly download well-formatted reports of your data.',
+      content: 'Task: Exporting data to Excel.\n\nNeed your data offline? Use the Export button to instantly download well-formatted Excel spreadsheets of your current view.',
       placement: 'left',
     }
   ]);
