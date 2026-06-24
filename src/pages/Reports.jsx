@@ -253,7 +253,9 @@ export function Reports() {
                     </div>
                     <div className={styles.metricBox}>
                       <span className={styles.metricBoxLabel}>Growth</span>
-                      <span className={styles.metricBoxValue}>{data.metrics.revenueGrowth.toFixed(1)}%</span>
+                      <span className={styles.metricBoxValue}>
+                        {data.metrics.revenueGrowth !== null ? `${data.metrics.revenueGrowth.toFixed(1)}%` : 'N/A'}
+                      </span>
                     </div>
                   </div>
 
