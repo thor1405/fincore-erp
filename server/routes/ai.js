@@ -181,4 +181,69 @@ Base your predictions and advice ONLY on the context provided above. If they hav
   }
 });
 
+router.post('/scan-receipt', authenticateToken, async (req, res) => {
+  try {
+    const { imageBase64, mimeType } = req.body;
+    const userId = req.user.userId;
+
+    if (!imageBase64 || !mimeType) {
+      return res.status(400).json({ error: 'Image data and mime type are required' });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'GEMINI_API_KEY is not configured' });
+    }
+
+    const { GoogleGenAI } = require('@google/genai');
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const systemInstruction = `You are FinCore AI, an expert financial OCR assistant.
+Your job is to read the provided receipt image and extract the transaction details.
+You MUST output EXACTLY a raw JSON object with no markdown formatting, no \`\`\`json wrappers, and no extra text.
+The JSON object must have exactly these keys:
+- "description": The name of the vendor or merchant.
+- "date": The date on the receipt in YYYY-MM-DD format. If not found, use today's date.
+- "amount": The total absolute amount of the receipt as a number.
+- "category": The most appropriate category. You MUST choose ONLY from this list: "Software", "Office", "Services", "Other". Do NOT use "Travel" or "Meals".
+
+Example output:
+{
+  "description": "Amazon Web Services",
+  "date": "2026-06-24",
+  "amount": 145.20,
+  "category": "Software"
+}`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { inlineData: { data: imageBase64, mimeType: mimeType } },
+            { text: "Extract the receipt details as JSON." }
+          ]
+        }
+      ],
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.1,
+      }
+    });
+
+    let rawText = response.text || "{}";
+    // Clean up potential markdown wrappers just in case
+    rawText = rawText.replace(/```json\n/g, '').replace(/```\n/g, '').replace(/```/g, '').trim();
+    
+    const parsedData = JSON.parse(rawText);
+
+    await createAuditLog(userId, 'AI_RECEIPT_SCANNED', 'AI', 'User scanned a receipt using AI OCR');
+
+    res.json(parsedData);
+  } catch (error) {
+    console.error('Error in AI receipt scanning:', error);
+    res.status(500).json({ error: 'Failed to process receipt image. Please try again.' });
+  }
+});
+
 module.exports = router;

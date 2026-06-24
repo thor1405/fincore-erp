@@ -7,6 +7,7 @@ import { Download, Filter, Plus, Search, Edit2, Trash2, CheckCircle, XCircle } f
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { TransactionModal } from '../components/TransactionModal';
+import { ReceiptScannerModal } from '../components/ReceiptScannerModal';
 import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
 import styles from './Transactions.module.css';
@@ -19,8 +20,14 @@ export function Transactions() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDate, setFilterDate] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleScanComplete = (scannedData) => {
+    setEditingTransaction(scannedData);
+    setIsModalOpen(true);
+  };
 
   const fetchTransactions = async () => {
     setIsLoading(true);
@@ -203,6 +210,7 @@ export function Transactions() {
         <div className={styles.actions}>
           <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || transactions.length === 0}>Export to Excel</Button>
           <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
+            <Button variant="secondary" onClick={() => setIsScannerOpen(true)}>Scan Receipt ✨</Button>
             <Button icon={Plus} onClick={openNewModal}>Add Transaction</Button>
           </RoleGuard>
         </div>
@@ -248,6 +256,11 @@ export function Transactions() {
         onClose={() => setIsModalOpen(false)} 
         onTransactionAdded={fetchTransactions} 
         initialData={editingTransaction}
+      />
+      <ReceiptScannerModal 
+        isOpen={isScannerOpen} 
+        onClose={() => setIsScannerOpen(false)} 
+        onScanComplete={handleScanComplete} 
       />
     </div>
   );
