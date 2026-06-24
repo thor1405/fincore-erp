@@ -5,6 +5,7 @@ import { Input } from '../components/ui/Input';
 import { Table } from '../components/ui/Table';
 import { Plus, Trash2, CheckCircle2, AlertCircle, Save, ArrowLeft, Edit2, Download } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { RoleGuard } from '../components/RoleGuard';
 import styles from './JournalEntries.module.css';
 
