@@ -64,6 +64,55 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   }
 });
 
+// Get customer profile (details + invoices)
+router.get('/:id/profile', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const customer = await prisma.customer.findUnique({ where: { id } });
+    if (!customer || customer.userId !== req.user.userId) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    // Match invoices by customer name since Invoice model stores client as a string
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        userId: req.user.userId,
+        client: customer.name
+      },
+      orderBy: { date: 'desc' }
+    });
+
+    const now = new Date();
+    let lifetimeValue = 0;
+    let overdueAmount = 0;
+
+    invoices.forEach(inv => {
+      if (inv.status === 'Paid') {
+        lifetimeValue += inv.amount;
+      } else if (inv.status !== 'Draft') {
+        const isPastDue = new Date(inv.dueDate).getTime() < now.getTime();
+        if (inv.status === 'Overdue' || isPastDue) {
+          overdueAmount += inv.amount;
+        }
+      }
+    });
+
+    res.json({
+      customer,
+      metrics: {
+        lifetimeValue,
+        overdueAmount,
+        invoiceCount: invoices.length
+      },
+      invoices
+    });
+  } catch (error) {
+    console.error('Error fetching customer profile:', error);
+    res.status(500).json({ error: 'Failed to fetch customer profile' });
+  }
+});
+
 // Delete a customer
 router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
   try {

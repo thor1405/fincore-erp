@@ -19,6 +19,7 @@ import { AcceptInvite } from './pages/AcceptInvite';
 
 import { Accounts } from './pages/Accounts';
 import { Customers } from './pages/Customers';
+import { CustomerProfile } from './pages/CustomerProfile';
 import { Vendors } from './pages/Vendors';
 import { Payments } from './pages/Payments';
 import { Reports } from './pages/Reports';
@@ -46,6 +47,7 @@ function App() {
                   <Route path="transactions" element={<Transactions />} />
                   <Route path="journal" element={<JournalEntries />} />
                   <Route path="customers" element={<Customers />} />
+                  <Route path="customers/:id" element={<CustomerProfile />} />
                   <Route path="vendors" element={<Vendors />} />
                   <Route path="invoices" element={<Invoices />} />
                   <Route path="budgets" element={<Budgets />} />
