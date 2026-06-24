@@ -48,7 +48,13 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
           status: 'Completed'
         }
       });
-      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded expense for payment to ${payment.recipient}`);
+      await createAuditLog(
+      req.user.userId,
+      'AUTO_TRANSACTION',
+      'Transactions',
+      `Auto-recorded expense for payment to ${payment.recipient}`,
+      req.user.actualUserId || req.user.userId
+    );
     }
 
     res.status(201).json(payment);
@@ -84,7 +90,8 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'UPDATED_PAYMENT',
       'Payments',
-      `Updated payment to ${recipient} for ${amount}`
+      `Updated payment to ${recipient} for ${amount}`,
+      req.user.actualUserId || req.user.userId
     );
     
     if (existingPayment.status !== 'Completed' && status === 'Completed') {
@@ -99,7 +106,13 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
           status: 'Completed'
         }
       });
-      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded expense for payment to ${payment.recipient}`);
+      await createAuditLog(
+      req.user.userId,
+      'AUTO_TRANSACTION',
+      'Transactions',
+      `Auto-recorded expense for payment to ${payment.recipient}`,
+      req.user.actualUserId || req.user.userId
+    );
     }
 
     res.json(payment);
@@ -133,14 +146,21 @@ router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) =>
           type: 'Debit'
         }
       });
-      await createAuditLog(req.user.userId, 'DELETED_TRANSACTION', 'Transactions', `Deleted expense transaction for payment to ${existingPayment.recipient}`);
+      await createAuditLog(
+      req.user.userId,
+      'DELETED_TRANSACTION',
+      'Transactions',
+      `Deleted expense transaction for payment to ${existingPayment.recipient}`,
+      req.user.actualUserId || req.user.userId
+    );
     }
 
     await createAuditLog(
       req.user.userId,
       'DELETED_PAYMENT',
       'Payments',
-      `Deleted payment to ${existingPayment.recipient}`
+      `Deleted payment to ${existingPayment.recipient}`,
+      req.user.actualUserId || req.user.userId
     );
     
     res.json({ message: 'Payment deleted successfully' });

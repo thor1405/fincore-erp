@@ -11,7 +11,15 @@ router.get('/', authenticateToken, async (req, res) => {
     const logs = await prisma.auditLog.findMany({
       where: { userId: req.user.userId },
       orderBy: { createdAt: 'desc' },
-      take: 100 // Limit to last 100 logs
+      take: 100, // Limit to last 100 logs
+      include: {
+        actor: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
+      }
     });
     
     res.json(logs);

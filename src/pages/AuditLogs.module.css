@@ -115,11 +115,52 @@
 }
 
 .actionCell {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-main);
 }
 
 .detailsCell {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.userCell {
+  min-width: 180px;
+}
+
+.userBadge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--color-indigo);
+  font-size: 0.9rem;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-weight: 500;
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.userEmail {
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 

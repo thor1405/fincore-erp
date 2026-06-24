@@ -8,12 +8,13 @@ const prisma = new PrismaClient();
  * @param {string} module - The module where the action occurred (e.g., 'Transactions')
  * @param {string} details - Additional context or details
  */
-async function createAuditLog(userId, action, module, details = null) {
+async function createAuditLog(userId, action, module, details = null, actorId = null) {
   try {
     if (!userId) return;
     await prisma.auditLog.create({
       data: {
         userId,
+        actorId: actorId || userId,
         action,
         module,
         details

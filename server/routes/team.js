@@ -39,7 +39,8 @@ router.post('/invite', authenticateToken, requireAdminAccess, async (req, res) =
       req.user.userId,
       'INVITED_TEAM_MEMBER',
       'Settings',
-      `Invited ${email} as ${role}`
+      `Invited ${email} as ${role}`,
+      req.user.actualUserId || req.user.userId
     );
 
     // Generate link dynamically based on the request origin
@@ -105,7 +106,8 @@ router.delete('/:id', authenticateToken, requireAdminAccess, async (req, res) =>
       req.user.userId,
       'REMOVED_TEAM_MEMBER',
       'Settings',
-      `Removed team member ${existingMember.email}`
+      `Removed team member ${existingMember.email}`,
+      req.user.actualUserId || req.user.userId
     );
 
     res.json({ message: 'Team member removed successfully' });

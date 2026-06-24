@@ -110,7 +110,13 @@ router.post('/payment', authenticateToken, requireWriteAccess, async (req, res) 
       }
     });
 
-    await createAuditLog(req.user.userId, 'RECORDED_TAX_PAYMENT', 'Taxes', `Recorded tax payment of ${amount}`);
+    await createAuditLog(
+      req.user.userId,
+      'RECORDED_TAX_PAYMENT',
+      'Taxes',
+      `Recorded tax payment of ${amount}`,
+      req.user.actualUserId || req.user.userId
+    );
 
     res.status(201).json(payment);
   } catch (error) {

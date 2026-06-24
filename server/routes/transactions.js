@@ -53,7 +53,9 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'CREATED_TRANSACTION',
       'Transactions',
-      `Created ${type} transaction for ${amount} (${description})`
+      `Created ${type} transaction for ${amount} (${description},
+      req.user.actualUserId || req.user.userId
+    )`
     );
 
     if (parsedAmount > 10000 && settings?.pushApprovals) {
@@ -114,7 +116,9 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'UPDATED_TRANSACTION',
       'Transactions',
-      `Updated ${type} transaction for ${amount} (${description})`
+      `Updated ${type} transaction for ${amount} (${description},
+      req.user.actualUserId || req.user.userId
+    )`
     );
 
     res.json(transaction);
@@ -158,7 +162,9 @@ router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) =>
       req.user.userId,
       'DELETED_TRANSACTION',
       'Transactions',
-      `Deleted ${transaction.type} transaction for ${transaction.amount} (${transaction.description})`
+      `Deleted ${transaction.type} transaction for ${transaction.amount} (${transaction.description},
+      req.user.actualUserId || req.user.userId
+    )`
     );
 
     res.json({ message: 'Transaction deleted successfully' });
@@ -187,7 +193,8 @@ router.post('/:id/approve', authenticateToken, requireWriteAccess, async (req, r
       req.user.userId,
       'APPROVED_TRANSACTION',
       'Transactions',
-      `Approved transaction ${transaction.id} for ${transaction.amount}`
+      `Approved transaction ${transaction.id} for ${transaction.amount}`,
+      req.user.actualUserId || req.user.userId
     );
 
     res.json(transaction);
@@ -216,7 +223,8 @@ router.post('/:id/reject', authenticateToken, requireWriteAccess, async (req, re
       req.user.userId,
       'REJECTED_TRANSACTION',
       'Transactions',
-      `Rejected transaction ${transaction.id} for ${transaction.amount}`
+      `Rejected transaction ${transaction.id} for ${transaction.amount}`,
+      req.user.actualUserId || req.user.userId
     );
 
     res.json(transaction);

@@ -9,6 +9,7 @@ export function AuditLogs() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterModule, setFilterModule] = useState('All');
+  const [filterUser, setFilterUser] = useState('All');
 
   useEffect(() => {
     fetchLogs();
@@ -40,14 +41,16 @@ export function AuditLogs() {
     }
   };
 
+  const uniqueUsers = ['All', ...new Set(logs.map(l => l.actor?.name || 'System'))];
+
   const filteredLogs = logs.filter(log => {
     const matchesSearch = log.action.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           (log.details && log.details.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesModule = filterModule === 'All' || log.module === filterModule;
-    return matchesSearch && matchesModule;
+    const actorName = log.actor?.name || 'System';
+    const matchesUser = filterUser === 'All' || actorName === filterUser;
+    return matchesSearch && matchesModule && matchesUser;
   });
-
-  const uniqueModules = ['All', ...new Set(logs.map(l => l.module))];
 
   return (
     <div className={styles.container}>
@@ -75,7 +78,16 @@ export function AuditLogs() {
           onChange={(e) => setFilterModule(e.target.value)}
         >
           {uniqueModules.map(m => (
-            <option key={m} value={m}>{m}</option>
+            <option key={m} value={m}>Module: {m}</option>
+          ))}
+        </select>
+        <select 
+          className={styles.filterSelect}
+          value={filterUser}
+          onChange={(e) => setFilterUser(e.target.value)}
+        >
+          {uniqueUsers.map(u => (
+            <option key={u} value={u}>User: {u}</option>
           ))}
         </select>
       </div>
@@ -85,6 +97,7 @@ export function AuditLogs() {
           <thead>
             <tr>
               <th>Timestamp</th>
+              <th>User</th>
               <th>Module</th>
               <th>Action</th>
               <th>Details</th>
@@ -92,10 +105,10 @@ export function AuditLogs() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="4" className={styles.emptyState}>Loading logs...</td></tr>
+              <tr><td colSpan="5" className={styles.emptyState}>Loading logs...</td></tr>
             ) : filteredLogs.length === 0 ? (
               <tr>
-                <td colSpan="4" className={styles.emptyState}>
+                <td colSpan="5" className={styles.emptyState}>
                   <ShieldAlert size={32} className={styles.emptyIcon} />
                   <p>No audit logs found matching your criteria.</p>
                 </td>
@@ -105,6 +118,17 @@ export function AuditLogs() {
                 <tr key={log.id}>
                   <td className={styles.timeCell}>
                     {new Date(log.createdAt).toLocaleString()}
+                  </td>
+                  <td className={styles.userCell}>
+                    <div className={styles.userBadge}>
+                      <div className={styles.userAvatar}>
+                        {(log.actor?.name || 'S')[0].toUpperCase()}
+                      </div>
+                      <div className={styles.userInfo}>
+                        <span className={styles.userName}>{log.actor?.name || 'System'}</span>
+                        {log.actor?.email && <span className={styles.userEmail}>{log.actor.email}</span>}
+                      </div>
+                    </div>
                   </td>
                   <td>
                     <span className={styles.moduleBadge} style={{ backgroundColor: getModuleColor(log.module) }}>

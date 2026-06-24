@@ -27,7 +27,8 @@ model User {
   Vendor       Vendor[]
   Payment      Payment[]
   Settings     Settings?
-  AuditLog     AuditLog[]
+  AuditLogs    AuditLog[] @relation("WorkspaceAuditLogs")
+  ActorLogs    AuditLog[] @relation("ActorAuditLogs")
   TeamMember   TeamMember[]
   TaxPayment   TaxPayment[]
   Notification Notification[]
@@ -196,7 +197,9 @@ model TaxPayment {
 model AuditLog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation("WorkspaceAuditLogs", fields: [userId], references: [id])
+  actorId   String?  @db.ObjectId
+  actor     User?    @relation("ActorAuditLogs", fields: [actorId], references: [id])
   action    String
   module    String
   details   String?

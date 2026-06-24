@@ -56,7 +56,8 @@ router.put('/', authenticateToken, requireAdminAccess, async (req, res) => {
       req.user.userId,
       'UPDATED_SETTINGS',
       'Settings',
-      'Updated company settings and preferences'
+      'Updated company settings and preferences',
+      req.user.actualUserId || req.user.userId
     );
 
     res.json(settings);

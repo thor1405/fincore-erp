@@ -81,7 +81,9 @@ router.post('/run-payroll', authenticateToken, async (req, res) => {
       req.user.userId,
       'RUN_PAYROLL',
       'Employees',
-      `Processed payroll for ${employees.length} employees totaling $${totalPayroll.toFixed(2)}`
+      `Processed payroll for ${employees.length} employees totaling $${totalPayroll.toFixed(2,
+      req.user.actualUserId || req.user.userId
+    )}`
     );
 
     res.json({ message: 'Payroll processed successfully', total: totalPayroll });

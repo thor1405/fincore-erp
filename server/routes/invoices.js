@@ -46,7 +46,8 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'CREATED_INVOICE',
       'Invoices',
-      `Created invoice ${invoiceId} for ${client}`
+      `Created invoice ${invoiceId} for ${client}`,
+      req.user.actualUserId || req.user.userId
     );
 
     await triggerInvoiceUpdate(req.user.userId, invoice.invoiceId, invoice.status, invoice.client, invoice.amount);
@@ -63,7 +64,13 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
           status: 'Completed'
         }
       });
-      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded payment for invoice ${invoice.invoiceId}`);
+      await createAuditLog(
+      req.user.userId,
+      'AUTO_TRANSACTION',
+      'Transactions',
+      `Auto-recorded payment for invoice ${invoice.invoiceId}`,
+      req.user.actualUserId || req.user.userId
+    );
     }
 
     res.status(201).json(invoice);
@@ -99,7 +106,8 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       req.user.userId,
       'UPDATED_INVOICE',
       'Invoices',
-      `Updated invoice ${existingInvoice.invoiceId}`
+      `Updated invoice ${existingInvoice.invoiceId}`,
+      req.user.actualUserId || req.user.userId
     );
     
     if (existingInvoice.status !== 'Paid' && status === 'Paid') {
@@ -114,7 +122,13 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
           status: 'Completed'
         }
       });
-      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded payment for invoice ${invoice.invoiceId}`);
+      await createAuditLog(
+      req.user.userId,
+      'AUTO_TRANSACTION',
+      'Transactions',
+      `Auto-recorded payment for invoice ${invoice.invoiceId}`,
+      req.user.actualUserId || req.user.userId
+    );
     }
 
     res.json(invoice);
@@ -144,7 +158,8 @@ router.patch('/:id/status', authenticateToken, requireWriteAccess, async (req, r
       req.user.userId,
       'UPDATED_INVOICE_STATUS',
       'Invoices',
-      `Updated invoice ${invoice.invoiceId} status to ${status}`
+      `Updated invoice ${invoice.invoiceId} status to ${status}`,
+      req.user.actualUserId || req.user.userId
     );
 
     await triggerInvoiceUpdate(req.user.userId, invoice.invoiceId, invoice.status, invoice.client, invoice.amount);
@@ -161,7 +176,13 @@ router.patch('/:id/status', authenticateToken, requireWriteAccess, async (req, r
           status: 'Completed'
         }
       });
-      await createAuditLog(req.user.userId, 'AUTO_TRANSACTION', 'Transactions', `Auto-recorded payment for invoice ${invoice.invoiceId}`);
+      await createAuditLog(
+      req.user.userId,
+      'AUTO_TRANSACTION',
+      'Transactions',
+      `Auto-recorded payment for invoice ${invoice.invoiceId}`,
+      req.user.actualUserId || req.user.userId
+    );
     }
 
     res.json(invoice);
@@ -189,7 +210,8 @@ router.delete('/:id', authenticateToken, requireWriteAccess, async (req, res) =>
       req.user.userId,
       'DELETED_INVOICE',
       'Invoices',
-      `Deleted invoice ${existingInvoice.invoiceId}`
+      `Deleted invoice ${existingInvoice.invoiceId}`,
+      req.user.actualUserId || req.user.userId
     );
     
     res.json({ message: 'Invoice deleted successfully' });
