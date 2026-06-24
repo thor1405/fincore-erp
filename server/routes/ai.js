@@ -228,12 +228,17 @@ Example output:
       config: {
         systemInstruction: systemInstruction,
         temperature: 0.1,
+        responseMimeType: "application/json"
       }
     });
 
     let rawText = response.text || "{}";
-    // Clean up potential markdown wrappers just in case
-    rawText = rawText.replace(/```json\n/g, '').replace(/```\n/g, '').replace(/```/g, '').trim();
+    
+    // Fallback cleanup: If the model still returned markdown or intro text, extract just the JSON block
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      rawText = jsonMatch[0];
+    }
     
     const parsedData = JSON.parse(rawText);
 
