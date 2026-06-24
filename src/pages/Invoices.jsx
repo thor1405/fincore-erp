@@ -7,6 +7,7 @@ import { Plus, Search, FileText, Filter, Download, Edit2, Trash2, CheckCircle2 }
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { InvoiceModal } from '../components/InvoiceModal';
+import { InvoicePreviewModal } from '../components/InvoicePreviewModal';
 import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
 import styles from './Invoices.module.css';
@@ -20,6 +21,7 @@ export function Invoices() {
   const [filterStatus, setFilterStatus] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
+  const [previewInvoice, setPreviewInvoice] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchInvoices = async () => {
@@ -124,9 +126,9 @@ export function Invoices() {
           {invoice.status !== 'Paid' && (
             <Button variant="ghost" size="sm" icon={CheckCircle2} onClick={() => handleMarkPaid(invoice.id)} title="Mark as Paid" style={{ color: 'var(--color-emerald)' }} />
           )}
-          <Button variant="ghost" size="sm" icon={FileText} />
-          <Button variant="ghost" size="sm" icon={Edit2} onClick={() => handleEdit(invoice)} />
-          <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(invoice.id)} style={{ color: 'var(--color-red)' }} />
+          <Button variant="ghost" size="sm" icon={FileText} onClick={() => setPreviewInvoice(invoice)} title="Preview & Print PDF" />
+          <Button variant="ghost" size="sm" icon={Edit2} onClick={() => handleEdit(invoice)} title="Edit Invoice" />
+          <Button variant="ghost" size="sm" icon={Trash2} onClick={() => handleDelete(invoice.id)} style={{ color: 'var(--color-red)' }} title="Delete Invoice" />
         </div>
       )
     }] : [])
@@ -210,6 +212,11 @@ export function Invoices() {
         onClose={() => { setIsModalOpen(false); setEditingInvoice(null); }} 
         onInvoiceAdded={fetchInvoices} 
         initialData={editingInvoice}
+      />
+
+      <InvoicePreviewModal 
+        invoice={previewInvoice} 
+        onClose={() => setPreviewInvoice(null)} 
       />
     </div>
   );

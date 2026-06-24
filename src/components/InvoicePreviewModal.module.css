@@ -1,0 +1,308 @@
+/* Modal Overlay & Container */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 40px 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContainer {
+  background-color: transparent;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Screen-only Action Header */
+.actionHeader {
+  background-color: var(--bg-app);
+  border-radius: var(--radius-lg);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
+
+.headerLeft, .headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerLeft h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+.badge {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: var(--color-indigo);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+}
+
+.closeBtn:hover {
+  background-color: var(--border-color);
+  color: var(--text-main);
+}
+
+/* Document Wrapper */
+.documentWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+/* The A4 Document itself */
+.a4Document {
+  background-color: #ffffff;
+  color: #1e293b;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Header Section */
+.docHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 20px;
+}
+
+.companyInfo p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.companyName {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.invoiceTitleBlock {
+  text-align: right;
+}
+
+.invoiceTitleText {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+}
+
+.invoiceNumber {
+  margin: 8px 0 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Meta Section (Bill To / Dates) */
+.docMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.metaLabel {
+  margin: 0 0 8px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.clientName {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: right;
+}
+
+.dateItem {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  align-items: center;
+}
+
+.dateValue {
+  font-weight: 600;
+  color: #334155;
+  min-width: 120px;
+}
+
+/* Items Table */
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 40px;
+}
+
+.itemsTable th {
+  background-color: #f8fafc;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.itemsTable td {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.colQty, .colPrice, .colTotal {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.colDesc {
+  width: 50%;
+}
+
+.itemTitle {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.itemSubtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.colTotal {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Totals Block */
+.totalsBlock {
+  width: 300px;
+  margin-left: auto;
+  margin-bottom: 60px;
+}
+
+.totalsRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.grandTotal {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: #64748b;
+  margin-top: auto;
+  padding-top: 40px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.footer p {
+  margin: 8px 0;
+}
+
+.footerFineprint {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* PRINT STYLES */
+@media print {
+  /* Hide all elements globally that have the .no-print class (we apply this to our React root or action headers) */
+  :global(.no-print), :global(#sidebar), :global(#header) {
+    display: none !important;
+  }
+
+  /* Reset body and hide everything except the print container */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Only show the a4Document and its children */
+  .a4Document, .a4Document * {
+    visibility: visible;
+  }
+
+  /* Position the document at the absolute top-left for perfect printing */
+  .a4Document {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+  }
+}
