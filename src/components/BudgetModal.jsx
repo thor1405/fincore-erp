@@ -63,14 +63,12 @@ export function BudgetModal({ isOpen, onClose, onSuccess, initialData = null }) 
               style={{ width: '100%', padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
             >
               <option value="" disabled>Select Category</option>
-              <option value="Payroll Expense">Payroll Expense</option>
-              <option value="Office Expense">Office Expense</option>
-              <option value="Software Expense">Software Expense</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Travel">Travel</option>
-              <option value="Legal & Professional">Legal & Professional</option>
-              <option value="Cost of Goods Sold">Cost of Goods Sold</option>
-              <option value="Other Expenses">Other Expenses</option>
+              <option value="Sales">Sales</option>
+              <option value="Services">Services</option>
+              <option value="Software">Software</option>
+              <option value="Payroll">Payroll</option>
+              <option value="Office">Office</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
