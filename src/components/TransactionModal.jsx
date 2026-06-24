@@ -35,11 +35,12 @@ export function TransactionModal({ isOpen, onClose, onTransactionAdded, initialD
     setIsLoading(true);
 
     try {
-      const url = initialData 
+      const isEdit = initialData && initialData.id;
+      const url = isEdit
         ? `/api/transactions/${initialData.id}`
         : '/api/transactions';
       
-      const method = initialData ? 'PUT' : 'POST';
+      const method = isEdit ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
@@ -64,7 +65,7 @@ export function TransactionModal({ isOpen, onClose, onTransactionAdded, initialD
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
-        <h2>{initialData ? 'Edit Transaction' : 'Add Transaction'}</h2>
+        <h2>{(initialData && initialData.id) ? 'Edit Transaction' : 'Add Transaction'}</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
           <Input 
             label="Description" 
@@ -103,7 +104,7 @@ export function TransactionModal({ isOpen, onClose, onTransactionAdded, initialD
 
           <div className={styles.actions}>
             <Button variant="outline" onClick={onClose} type="button">Cancel</Button>
-            <Button type="submit" disabled={isLoading}>{initialData ? 'Save Changes' : 'Add'}</Button>
+            <Button type="submit" disabled={isLoading}>{(initialData && initialData.id) ? 'Save Changes' : 'Add'}</Button>
           </div>
         </form>
       </div>
