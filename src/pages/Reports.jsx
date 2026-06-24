@@ -252,12 +252,18 @@ export function Reports() {
                     <h4 style={{ margin: '16px 0 8px 0', fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                       AI Executive Summary
                     </h4>
-                    {data.insights.map((insight) => (
-                      <div key={insight.id} className={styles.aiInsightCard}>
-                        <Sparkles size={16} className={styles.aiInsightIcon} />
-                        <p className={styles.aiInsightText}>{insight.text}</p>
-                      </div>
-                    ))}
+                    {data.insights.map((insight) => {
+                      const isWarning = insight.text.toLowerCase().includes('warning');
+                      return (
+                        <div key={insight.id} className={styles.aiInsightCard} style={isWarning ? { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'var(--color-red)' } : {}}>
+                          {isWarning ? 
+                            <AlertCircle size={16} style={{ color: 'var(--color-red)', flexShrink: 0 }} /> : 
+                            <Sparkles size={16} className={styles.aiInsightIcon} />
+                          }
+                          <p className={styles.aiInsightText} style={isWarning ? { color: 'var(--color-red)', margin: 0 } : { margin: 0 }}>{insight.text}</p>
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

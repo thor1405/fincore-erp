@@ -286,12 +286,18 @@ export function Dashboard() {
           <CardHeader title="AI Insights" subtitle="Smart analysis of your finances" icon={<Sparkles size={18} color="var(--color-indigo)" />} />
           <CardContent>
             <div className={styles.insightsList}>
-              {data.insights.map((insight) => (
-                <div key={insight.id} className={styles.insightCard}>
-                  <Sparkles size={16} className={styles.insightIcon} />
-                  <p className={styles.insightText}>{insight.text}</p>
-                </div>
-              ))}
+              {data.insights.map((insight) => {
+                const isWarning = insight.text.toLowerCase().includes('warning');
+                return (
+                  <div key={insight.id} className={styles.insightCard} style={isWarning ? { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'var(--color-red)' } : {}}>
+                    {isWarning ? 
+                      <AlertCircle size={16} style={{ color: 'var(--color-red)', flexShrink: 0 }} /> : 
+                      <Sparkles size={16} className={styles.insightIcon} />
+                    }
+                    <p className={styles.insightText} style={isWarning ? { color: 'var(--color-red)', margin: 0 } : { margin: 0 }}>{insight.text}</p>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

@@ -154,7 +154,7 @@ router.get('/', authenticateToken, async (req, res) => {
     let pendingCount = 0;
     
     invoices.forEach(inv => {
-      if (inv.status !== 'Paid') {
+      if (inv.status !== 'Paid' && inv.status !== 'Draft') {
         arTotal += inv.amount;
         pendingCount++;
         const isPastDue = new Date(inv.dueDate).getTime() < now.getTime();
