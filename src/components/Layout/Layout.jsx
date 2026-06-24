@@ -170,6 +170,9 @@ export function Layout() {
     const isTourCompleted = localStorage.getItem('fincore_tour_completed');
     if (isTourCompleted !== 'true') {
       setTourRun(true);
+      // Mark it as completed immediately so that hitting refresh or closing the tab 
+      // doesn't cause it to endlessly pop up on subsequent loads.
+      localStorage.setItem('fincore_tour_completed', 'true');
     }
   }, []);
 
