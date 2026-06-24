@@ -35,8 +35,13 @@ export function OnboardingTour({ run, setRun }) {
       placement: 'right',
     },
     {
-      target: 'a[href="/journal-entries"]',
-      content: 'Task: Advanced manual accounting.\n\nUse double-entry bookkeeping to record complex transactions, correct mistakes across specific accounts, or manage depreciation and loans.',
+      target: 'a[href="/journal"]',
+      content: 'Task: Advanced manual accounting (Journal Entries).\n\nUse double-entry bookkeeping to record complex transactions, correct mistakes across specific accounts, or manage depreciation and loans. This gives you ultimate control over your general ledger.',
+      placement: 'right',
+    },
+    {
+      target: 'a[href="/budgets"]',
+      content: 'Task: Interactive Budgeting.\n\nSet monthly spend limits by category and track your progress through gamified visual bars that dynamically update as you create transactions.',
       placement: 'right',
     },
     {
