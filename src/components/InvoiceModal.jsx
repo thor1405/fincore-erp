@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { useAuth } from '../contexts/AuthContext';
@@ -62,7 +63,7 @@ export function InvoiceModal({ isOpen, onClose, onInvoiceAdded, initialData = nu
     }
   };
 
-  return (
+  const modalContent = (
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <h2>{initialData ? 'Edit Invoice' : 'Create Invoice'}</h2>
@@ -114,11 +115,13 @@ export function InvoiceModal({ isOpen, onClose, onInvoiceAdded, initialData = nu
 
           <div className={styles.actions}>
             <Button variant="outline" onClick={onClose} type="button">Cancel</Button>
-            <Button type="submit" disabled={isLoading}>{initialData ? 'Save Changes' : 'Create'}</Button>
+            <Button type="submit" disabled={isLoading}>{initialData ? 'Save Changes' : 'Create Invoice'}</Button>
           </div>
         </form>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
 

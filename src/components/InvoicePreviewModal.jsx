@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Printer, Download } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAuth } from '../contexts/AuthContext';
@@ -31,7 +32,7 @@ export function InvoicePreviewModal({ invoice, onClose }) {
   const formattedDate = new Date(invoice.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const formattedDueDate = new Date(invoice.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  return (
+  const modalContent = (
     <div className={styles.overlay}>
       <div className={styles.modalContainer}>
         {/* Actions Header - Hidden during print */}
@@ -125,4 +126,6 @@ export function InvoicePreviewModal({ invoice, onClose }) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
