@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { JWT_SECRET } = require('../middleware/auth');
 const { createAuditLog } = require('../utils/audit');
-const { triggerSecurityAlert } = require('../services/notificationService');
+const { triggerSecurityAlert, triggerWelcomeEmail } = require('../services/notificationService');
 const { authenticator } = require('otplib');
 const qrcode = require('qrcode');
 
@@ -61,6 +61,9 @@ router.post('/register', async (req, res) => {
         currency: 'USD'
       }
     });
+
+    // Fire Onboarding Welcome Email
+    await triggerWelcomeEmail(user.id);
 
     // Check if this user is a team member for someone else
     const teamMember = await prisma.teamMember.findFirst({
