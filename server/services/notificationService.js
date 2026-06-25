@@ -305,6 +305,60 @@ const triggerWeeklySummary = async (userId, reportData) => {
   await sendEmail(settings.user.email, subject, plainText, html);
 };
 
+/**
+ * Triggers a Budget Exceeded Alert
+ */
+const triggerBudgetAlert = async (userId, category, spentAmount, budgetLimit) => {
+  const settings = await getUserSettings(userId);
+  if (!settings) return;
+
+  const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency });
+  const spent = formatter.format(spentAmount);
+  const limit = formatter.format(budgetLimit);
+  const overagePercent = ((spentAmount / budgetLimit) * 100).toFixed(0);
+
+  await createInAppNotification(
+    userId,
+    `Budget Exceeded: ${category}`,
+    `You have spent ${spent} on ${category}, which exceeds your allocated limit of ${limit} (${overagePercent}%).`,
+    'alert'
+  );
+
+  const subject = `🚨 Budget Alert: ${category} Threshold Exceeded`;
+  const plainText = `Hello ${settings.user.name},\n\nYou have spent ${spent} on ${category}, exceeding your monthly budget of ${limit}.`;
+  const html = renderHtmlTemplate(
+    subject,
+    `
+      <h2 style="color: #f87171; margin-top: 0; font-size: 20px;">Budget Limit Exceeded</h2>
+      <p>Hello ${settings.user.name},</p>
+      <p>Your recorded monthly expenditures for <strong>${category}</strong> have reached or exceeded your configured threshold:</p>
+      <table width="100%" border="0" cellspacing="0" cellpadding="14" style="background-color: #451a1a; border: 1px solid #7f1d1d; border-radius: 12px; margin: 24px 0;">
+        <tr>
+          <td style="color: #fca5a5; font-size: 14px;">Category</td>
+          <td align="right" style="color: #ffffff; font-weight: bold; font-size: 16px;">${category}</td>
+        </tr>
+        <tr>
+          <td style="color: #fca5a5; font-size: 14px;">Allocated Budget</td>
+          <td align="right" style="color: #cbd5e1; font-weight: bold;">${limit}</td>
+        </tr>
+        <tr>
+          <td style="color: #fca5a5; font-size: 14px;">Actual Spent</td>
+          <td align="right" style="color: #f87171; font-weight: 800; font-size: 20px;">${spent}</td>
+        </tr>
+        <tr>
+          <td style="color: #fca5a5; font-size: 14px;">Capacity Used</td>
+          <td align="right"><span style="background-color: #ef4444; color: #ffffff; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">${overagePercent}%</span></td>
+        </tr>
+      </table>
+      <p>We recommend reviewing your recent transactions or reallocating budget capacity.</p>
+    `,
+    'Adjust Budget Limits',
+    'https://myjoice.com/budgets'
+  );
+
+  await sendEmail(settings.user.email, subject, plainText, html);
+};
+
 module.exports = {
   triggerSecurityAlert,
   triggerInvoiceUpdate,
@@ -312,5 +366,6 @@ module.exports = {
   triggerOverdueInvoiceAlert,
   triggerWeeklySummary,
   triggerWelcomeEmail,
+  triggerBudgetAlert,
   createInAppNotification
 };

@@ -3,7 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const { authenticateToken } = require('../middleware/auth');
 const { requireWriteAccess } = require('../middleware/rbac');
 const { createAuditLog } = require('../utils/audit');
-const { triggerLargeTransactionAlert } = require('../services/notificationService');
+const { triggerLargeTransactionAlert, triggerBudgetAlert } = require('../services/notificationService');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -21,6 +21,38 @@ router.get('/', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
 });
+
+// Asynchronous Budget Threshold Monitor
+const checkBudgetThreshold = async (userId, category) => {
+  if (!category) return;
+  try {
+    const budget = await prisma.budget.findUnique({
+      where: { userId_category: { userId, category } }
+    });
+    if (!budget) return;
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    const spentData = await prisma.transaction.aggregate({
+      where: {
+        userId,
+        category,
+        type: 'Debit',
+        date: { gte: startOfMonth, lte: endOfMonth }
+      },
+      _sum: { amount: true }
+    });
+
+    const totalSpent = spentData._sum.amount || 0;
+    if (totalSpent >= budget.amount) {
+      await triggerBudgetAlert(userId, category, totalSpent, budget.amount);
+    }
+  } catch (err) {
+    console.error('Failed to run budget monitor:', err);
+  }
+};
 
 // Create a new transaction
 router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
@@ -58,6 +90,10 @@ router.post('/', authenticateToken, requireWriteAccess, async (req, res) => {
 
     if (parsedAmount > 10000 && settings?.pushApprovals) {
       await triggerLargeTransactionAlert(req.user.userId, description, parsedAmount);
+    }
+
+    if (type === 'Debit') {
+      checkBudgetThreshold(req.user.userId, category);
     }
 
     res.status(201).json(transaction);
@@ -116,6 +152,10 @@ router.put('/:id', authenticateToken, requireWriteAccess, async (req, res) => {
       'Transactions',
       `Updated ${type} transaction for ${amount} (${description})`, req.user.actualUserId || req.user.userId
     );
+
+    if (type === 'Debit') {
+      checkBudgetThreshold(req.user.userId, category);
+    }
 
     res.json(transaction);
   } catch (error) {
