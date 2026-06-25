@@ -9,7 +9,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const sendEmail = async (toEmail, subject, body) => {
   try {
     const data = await resend.emails.send({
-      from: 'FinCore ERP <onboarding@resend.dev>',
+      from: 'FinCore ERP <notifications@myjoice.com>',
       to: [toEmail],
       subject: subject,
       text: body
