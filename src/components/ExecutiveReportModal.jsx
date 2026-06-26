@@ -95,32 +95,63 @@ export function ExecutiveReportModal({ isOpen, onClose, data, title = 'Executive
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>2. Revenue vs Expenditure Trend Diagram</h2>
                 <div className={styles.diagramCard}>
-                  <div style={{ width: '100%', height: 180, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', borderBottom: '1px solid #cbd5e1', paddingBottom: 12 }}>
+                  <div style={{ width: '100%', height: 210, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', borderBottom: '1px solid #cbd5e1', paddingBottom: 12, paddingTop: 24 }}>
                     {monthlyData.slice(0, 8).map((item, idx) => {
                       const inc = item.Income || item.in || 0;
                       const exp = item.Expense || item.out || 0;
                       const max = Math.max(...monthlyData.slice(0, 8).map(m => Math.max(m.Income||m.in||0, m.Expense||m.out||0)), 1);
-                      const incH = Math.max((inc / max) * 140, 4);
-                      const expH = Math.max((exp / max) * 140, 4);
+                      const incH = Math.max((inc / max) * 130, 4);
+                      const expH = Math.max((exp / max) * 130, 4);
+
+                      const formatCompact = (val) => {
+                        if (!val) return '0';
+                        if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
+                        if (val >= 1000) return `${(val / 1000).toFixed(val >= 10000 ? 0 : 1)}k`;
+                        return `${val.toFixed(0)}`;
+                      };
+
                       return (
                         <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1 }}>
-                          <svg width="36" height="144" style={{ overflow: 'visible' }}>
-                            {/* Income Bar (Green Vector Rect) */}
+                          <svg width="48" height="160" style={{ overflow: 'visible' }}>
+                            {/* Income Value Label */}
+                            <text
+                              x="11"
+                              y={156 - incH - 6}
+                              textAnchor="middle"
+                              fontSize="9.5"
+                              fontWeight="800"
+                              fill="#065f46"
+                            >
+                              {formatCompact(inc)}
+                            </text>
+                            {/* Income Bar */}
                             <rect
-                              x="2"
-                              y={144 - incH}
-                              width="14"
+                              x="3"
+                              y={156 - incH}
+                              width="16"
                               height={incH}
                               fill="#10b981"
                               rx="3"
                             >
                               <title>Income: {formatCurrency(inc)}</title>
                             </rect>
-                            {/* Expense Bar (Red Vector Rect) */}
+
+                            {/* Expense Value Label */}
+                            <text
+                              x="33"
+                              y={156 - expH - 6}
+                              textAnchor="middle"
+                              fontSize="9.5"
+                              fontWeight="800"
+                              fill="#991b1b"
+                            >
+                              {formatCompact(exp)}
+                            </text>
+                            {/* Expense Bar */}
                             <rect
-                              x="20"
-                              y={144 - expH}
-                              width="14"
+                              x="25"
+                              y={156 - expH}
+                              width="16"
                               height={expH}
                               fill="#ef4444"
                               rx="3"
@@ -128,7 +159,7 @@ export function ExecutiveReportModal({ isOpen, onClose, data, title = 'Executive
                               <title>Expense: {formatCurrency(exp)}</title>
                             </rect>
                           </svg>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', textAlign: 'center' }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#334155', textAlign: 'center' }}>
                             {item.name || item.time || `T${idx+1}`}
                           </span>
                         </div>
