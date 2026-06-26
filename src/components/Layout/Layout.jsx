@@ -109,6 +109,36 @@ export function Layout() {
     }
   };
 
+  const getNotificationRoute = (notif) => {
+    if (notif.link || notif.url) return notif.link || notif.url;
+    const t = (notif.title || '').toLowerCase();
+    const m = (notif.message || '').toLowerCase();
+
+    if (t.includes('invoice') || m.includes('invoice') || m.includes('inv-')) return '/invoices';
+    if (t.includes('budget') || m.includes('budget')) return '/budgets';
+    if (t.includes('transaction') || m.includes('transaction') || t.includes('approval') || t.includes('expense')) return '/transactions';
+    if (t.includes('bank') || t.includes('account') || m.includes('bank')) return '/accounts';
+    if (t.includes('customer') || m.includes('customer')) return '/customers';
+    if (t.includes('vendor') || m.includes('vendor')) return '/vendors';
+    if (t.includes('payment') || m.includes('payment')) return '/payments';
+    if (t.includes('payroll') || m.includes('payroll')) return '/payroll';
+    if (t.includes('report') || m.includes('report')) return '/reports';
+    if (t.includes('tax') || m.includes('tax')) return '/taxes';
+    if (t.includes('saas') || m.includes('saas')) return '/saas';
+    if (t.includes('ai') || m.includes('ai')) return '/ai';
+    if (t.includes('audit') || m.includes('audit')) return '/audit';
+    return '/';
+  };
+
+  const handleNotificationClick = (notif) => {
+    if (!notif.isRead) {
+      handleMarkAsRead(notif.id);
+    }
+    const targetRoute = getNotificationRoute(notif);
+    navigate(targetRoute);
+    setNotificationsOpen(false);
+  };
+
   const handleMarkAllAsRead = async () => {
     try {
       await fetch(`/api/notifications/read-all`, {
@@ -293,7 +323,7 @@ export function Layout() {
                         <div 
                           key={notif.id} 
                           className={`${styles.notifItem} ${notif.isRead ? styles.read : styles.unread}`}
-                          onClick={() => !notif.isRead && handleMarkAsRead(notif.id)}
+                          onClick={() => handleNotificationClick(notif)}
                         >
                           <div className={styles.notifIconWrapper}>
                             {notif.type === 'alert' ? <AlertCircle size={16} className={styles.notifAlert} /> :
