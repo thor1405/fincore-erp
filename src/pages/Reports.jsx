@@ -32,7 +32,9 @@ export function Reports() {
       let startDate = new Date();
       let endDate = new Date();
 
-      if (dateRange === 'monthly') {
+      if (dateRange === 'daily') {
+        startDate.setHours(0, 0, 0, 0);
+      } else if (dateRange === 'monthly') {
         startDate.setMonth(now.getMonth() - 1);
       } else if (dateRange === 'quarterly') {
         startDate.setMonth(now.getMonth() - 3);
@@ -148,6 +150,7 @@ export function Reports() {
         </div>
         <div className={styles.actions}>
           <div className={styles.datePicker}>
+            <button className={`${styles.datePickerBtn} ${dateRange === 'daily' ? styles.active : ''}`} onClick={() => setDateRange('daily')}>1D</button>
             <button className={`${styles.datePickerBtn} ${dateRange === 'monthly' ? styles.active : ''}`} onClick={() => setDateRange('monthly')}>1M</button>
             <button className={`${styles.datePickerBtn} ${dateRange === 'quarterly' ? styles.active : ''}`} onClick={() => setDateRange('quarterly')}>3M</button>
             <button className={`${styles.datePickerBtn} ${dateRange === 'yearly' ? styles.active : ''}`} onClick={() => setDateRange('yearly')}>1Y</button>

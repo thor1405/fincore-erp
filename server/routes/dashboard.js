@@ -176,9 +176,9 @@ router.get('/', authenticateToken, async (req, res) => {
     });
 
     const recentTransactions = await prisma.transaction.findMany({
-      where: { userId },
+      where: { userId, date: { gte: startDate } },
       orderBy: { date: 'desc' },
-      take: 10
+      take: 100
     });
 
     const healthScore = calculateHealthScore(revenue, expenses, prevRevenue, prevExpenses, arOverdue);
