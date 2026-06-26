@@ -10,7 +10,73 @@ export function ExecutiveReportModal({ isOpen, onClose, data, title = 'Executive
   if (!isOpen || !data) return null;
 
   const handlePrintPdf = () => {
-    window.print();
+    const printWin = window.open('', '_blank');
+    if (!printWin) {
+      window.print();
+      return;
+    }
+
+    const paperEl = document.querySelector(`.${styles.paper}`);
+    if (!paperEl) {
+      printWin.close();
+      return;
+    }
+
+    const stylesHtml = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map(node => node.outerHTML)
+      .join('\n');
+
+    printWin.document.open();
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${title}</title>
+          ${stylesHtml}
+          <style>
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              box-sizing: border-box;
+            }
+            html, body {
+              margin: 0 !important;
+              padding: 24px !important;
+              background-color: #ffffff !important;
+              color: #0f172a !important;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+            .${styles.paper} {
+              width: 100% !important;
+              max-width: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              box-shadow: none !important;
+              border: none !important;
+            }
+            tr, .kpiBox, .diagramCard, .signBox, .paperHeader {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="${styles.paper}">
+            ${paperEl.innerHTML}
+          </div>
+          <script>
+            window.onload = () => {
+              setTimeout(() => {
+                window.focus();
+                window.print();
+              }, 450);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWin.document.close();
   };
 
   const kpis = data.kpis || {};

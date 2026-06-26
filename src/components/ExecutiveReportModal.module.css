@@ -376,7 +376,7 @@
   text-align: center;
 }
 
-/* ROCK-SOLID ENTERPRISE MULTI-PAGE PRINT RESET */
+/* FALLBACK NATIVE IN-PAGE PRINT STYLING */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -384,28 +384,10 @@
     color-adjust: exact !important;
   }
 
-  /* 1. Hide everything on the page by default */
-  body * {
-    visibility: hidden;
+  header, nav, aside, .toolbar {
+    display: none !important;
   }
 
-  /* 2. Reveal ONLY the report paper and its typography */
-  .paper, .paper * {
-    visibility: visible !important;
-  }
-
-  /* 3. Collapse all background dashboard widgets and headers to 0 height so they do not stretch the page */
-  :global(#root) header, :global(#root) nav, :global(#root) aside, [class*="dashboard"] > *:not([class*="modalOverlay"]) {
-    height: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    border: none !important;
-  }
-
-  /* 4. Unlock natural multi-page height on modal ancestors */
   html, body, :global(#root), [class*="dashboard"], .modalOverlay, .modalContainer, .documentViewport {
     height: auto !important;
     min-height: auto !important;
@@ -414,16 +396,11 @@
     position: static !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background-color: #ffffff !important;
   }
 
-  /* 5. Pin report sheet to top coordinate of document canvas */
   .paper {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    position: static !important;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
@@ -432,10 +409,6 @@
     color: #0f172a !important;
     box-shadow: none !important;
     border: none !important;
-  }
-
-  .toolbar {
-    display: none !important;
   }
 
   tr, .kpiBox, .diagramCard, .signBox, .paperHeader {
