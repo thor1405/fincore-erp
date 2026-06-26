@@ -111,14 +111,17 @@ export function Dashboard() {
     );
   };
 
-  const getHealthStatus = (score) => {
-    if (score >= 90) return { label: 'Excellent', class: styles.healthExcellent };
-    if (score >= 70) return { label: 'Good', class: styles.healthGood };
-    if (score >= 50) return { label: 'Warning', class: styles.healthWarning };
-    return { label: 'Poor', class: styles.healthPoor };
+  const getHealthColor = (score) => {
+    if (score >= 90) return { label: 'Excellent', color: '#10b981' };
+    if (score >= 70) return { label: 'Good', color: '#3b82f6' };
+    if (score >= 50) return { label: 'Warning', color: '#f59e0b' };
+    return { label: 'Poor', color: '#ef4444' };
   };
 
-  const health = getHealthStatus(data.healthScore);
+  const health = getHealthColor(data.healthScore);
+  const gaugeRadius = 54;
+  const gaugeCircumference = 2 * Math.PI * gaugeRadius;
+  const gaugeOffset = gaugeCircumference - (data.healthScore / 100) * gaugeCircumference;
 
   const getModuleIcon = (module) => {
     switch (module) {
@@ -269,10 +272,38 @@ export function Dashboard() {
         <Card>
           <CardHeader title="Financial Health" subtitle="Calculated algorithmic score" />
           <CardContent className={styles.healthScoreContainer}>
-            <div className={`${styles.healthScoreCircle} ${health.class}`}>
-              {data.healthScore}
+            <div style={{ position: 'relative', width: 140, height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="140" height="140" style={{ transform: 'rotate(-90deg)' }}>
+                <circle
+                  cx="70"
+                  cy="70"
+                  r={gaugeRadius}
+                  stroke="var(--border-color)"
+                  strokeWidth="10"
+                  fill="transparent"
+                />
+                <circle
+                  cx="70"
+                  cy="70"
+                  r={gaugeRadius}
+                  stroke={health.color}
+                  strokeWidth="10"
+                  fill="transparent"
+                  strokeDasharray={gaugeCircumference}
+                  strokeDashoffset={gaugeOffset}
+                  strokeLinecap="round"
+                  style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease' }}
+                />
+              </svg>
+              <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-1px' }}>
+                  {data.healthScore}
+                </span>
+              </div>
             </div>
-            <div className={styles.healthStatus}>{health.label}</div>
+            <div className={styles.healthStatus} style={{ color: health.color }}>
+              {health.label}
+            </div>
             <p style={{ margin: 0, textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               Based on cash flow, overdue invoices, and current profit margins.
             </p>
