@@ -69,10 +69,21 @@ export function SettingsProvider({ children }) {
     }
   };
 
-  // Utility to format numbers according to the global currency
+  const currencyLocales = {
+    INR: 'en-IN',
+    USD: 'en-US',
+    EUR: 'de-DE',
+    GBP: 'en-GB',
+    JPY: 'ja-JP',
+    AUD: 'en-AU',
+    CAD: 'en-CA'
+  };
+
+  // Utility to format numbers according to the global currency and proper standard locales (Lakhs/Crores for INR)
   const formatCurrency = (amount) => {
-    if (amount === undefined || amount === null) return '';
-    return `${currencySymbol}${amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (amount === undefined || amount === null || isNaN(amount)) return `${currencySymbol}0.00`;
+    const locale = currencyLocales[settings?.currency] || (currencySymbol === '₹' ? 'en-IN' : 'en-US');
+    return `${currencySymbol}${Number(amount).toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
   };
 
   return (

@@ -169,7 +169,8 @@ const triggerInvoiceUpdate = async (userId, invoiceId, status, clientName, amoun
   const settings = await getUserSettings(userId);
   if (!settings || !settings.emailInvoices) return;
 
-  const formattedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency }).format(amount);
+  const locale = settings.currency === 'INR' ? 'en-IN' : 'en-US';
+  const formattedAmount = new Intl.NumberFormat(locale, { style: 'currency', currency: settings.currency }).format(amount);
   const subject = `Invoice Update: ${invoiceId} (${status})`;
   const plainText = `Hello ${settings.user.name},\n\nInvoice ${invoiceId} for ${clientName} (${formattedAmount}) is now marked as: ${status}.`;
   
@@ -213,7 +214,8 @@ const triggerLargeTransactionAlert = async (userId, transactionDesc, amount) => 
   const settings = await getUserSettings(userId);
   if (!settings || !settings.pushApprovals) return;
 
-  const formattedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency }).format(amount);
+  const locale = settings.currency === 'INR' ? 'en-IN' : 'en-US';
+  const formattedAmount = new Intl.NumberFormat(locale, { style: 'currency', currency: settings.currency }).format(amount);
   await createInAppNotification(
     userId,
     'Large Transaction Needs Approval',
@@ -267,7 +269,8 @@ const triggerWeeklySummary = async (userId, reportData) => {
   const settings = await getUserSettings(userId);
   if (!settings || !settings.emailReports) return;
 
-  const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency });
+  const locale = settings.currency === 'INR' ? 'en-IN' : 'en-US';
+  const formatter = new Intl.NumberFormat(locale, { style: 'currency', currency: settings.currency });
   const rev = formatter.format(reportData.revenue);
   const exp = formatter.format(reportData.expenses);
   const net = formatter.format(reportData.cashFlow);
@@ -312,7 +315,8 @@ const triggerBudgetAlert = async (userId, category, spentAmount, budgetLimit) =>
   const settings = await getUserSettings(userId);
   if (!settings) return;
 
-  const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency });
+  const locale = settings.currency === 'INR' ? 'en-IN' : 'en-US';
+  const formatter = new Intl.NumberFormat(locale, { style: 'currency', currency: settings.currency });
   const spent = formatter.format(spentAmount);
   const limit = formatter.format(budgetLimit);
   const overagePercent = ((spentAmount / budgetLimit) * 100).toFixed(0);
