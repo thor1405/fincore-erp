@@ -78,6 +78,44 @@
   background-color: #334155;
 }
 
+/* THEME RESPONSIVE OVERRIDES */
+:global([data-theme="light"]) .modalOverlay {
+  background-color: rgba(100, 116, 139, 0.65);
+}
+:global([data-theme="light"]) .modalContainer {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+:global([data-theme="light"]) .toolbar {
+  background-color: #f8fafc;
+  border-bottom-color: #e2e8f0;
+  color: #0f172a;
+}
+:global([data-theme="light"]) .closeBtn {
+  color: #64748b;
+}
+:global([data-theme="light"]) .closeBtn:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+:global([data-theme="light"]) .documentViewport {
+  background-color: #f1f5f9;
+}
+
+:global([data-theme="dark"]) .modalContainer {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+:global([data-theme="dark"]) .toolbar {
+  background-color: #1e293b;
+  border-bottom-color: #334155;
+  color: #f8fafc;
+}
+:global([data-theme="dark"]) .documentViewport {
+  background-color: #1e293b;
+}
+
 /* Printable Paper */
 .paper {
   background-color: #ffffff;
