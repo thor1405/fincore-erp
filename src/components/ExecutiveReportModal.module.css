@@ -376,29 +376,59 @@
   text-align: center;
 }
 
-/* PRINT MEDIA QUERY RULES */
+/* PRINT MEDIA QUERY RULES FOR MULTI-PAGE PAGINATION */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
+  html, body, #root {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
   body * {
     visibility: hidden;
+  }
+  .modalOverlay, .modalContainer, .documentViewport {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
   }
   .paper, .paper * {
     visibility: visible;
   }
   .paper {
-    position: absolute;
+    position: relative !important;
     left: 0;
     top: 0;
-    width: 100%;
-    max-width: none;
-    padding: 0;
-    box-shadow: none;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    box-shadow: none !important;
+    border: none !important;
   }
   .toolbar {
     display: none !important;
+  }
+  /* Prevent horizontal slicing of rows, KPI cards, and signature blocks across page breaks */
+  tr, .kpiBox, .diagramCard, .signBox, .paperHeader {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
