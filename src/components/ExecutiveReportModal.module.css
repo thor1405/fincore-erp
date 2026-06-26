@@ -376,7 +376,7 @@
   text-align: center;
 }
 
-/* ENTERPRISE PRINT MEDIA QUERY FOR MULTI-PAGE REACT MODALS */
+/* ULTIMATE ENTERPRISE MULTI-PAGE PRINT RESET (EXACT PAGE COUNT) */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -384,7 +384,12 @@
     color-adjust: exact !important;
   }
 
-  /* 1. Reset all viewport trapping ancestors across the entire DOM tree */
+  /* 1. Collapse every DOM element on the page that is NOT part of the CFO report paper lineage */
+  body *:not(:has(.paper)):not(.paper):not(.paper *) {
+    display: none !important;
+  }
+
+  /* 2. Reset all ancestor wrappers of the CFO report paper to static visible overflow */
   html, body, #root, #root *, [class*="container"], [class*="layout"], [class*="viewport"], [class*="content"], [class*="dashboard"], [class*="reports"], [class*="modal"], [class*="overlay"] {
     height: auto !important;
     max-height: none !important;
@@ -402,21 +407,9 @@
     backdrop-filter: none !important;
   }
 
-  /* 2. Hide all app UI elements by default */
-  body * {
-    visibility: hidden;
-  }
-
-  /* 3. Unhide report sheet and all its contents */
-  #root .paper, #root .paper *, .paper, .paper * {
-    visibility: visible !important;
-  }
-
-  /* 4. Pin report sheet to top-left coordinate of document canvas */
+  /* 3. Style report sheet cleanly */
   #root .paper, body .paper, .paper {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    position: static !important;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
@@ -425,15 +418,15 @@
     color: #0f172a !important;
     box-shadow: none !important;
     border: none !important;
-    z-index: 9999999 !important;
+    visibility: visible !important;
   }
 
-  /* 5. Explicitly hide toolbars and sidebars */
-  #root .toolbar, .toolbar, header, nav, aside {
+  /* 4. Hide modal toolbar explicitly */
+  #root .toolbar, .toolbar {
     display: none !important;
   }
 
-  /* 6. Prevent row splitting across printed pages */
+  /* 5. Prevent row slicing across page breaks */
   tr, .kpiBox, .diagramCard, .signBox, .paperHeader {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
