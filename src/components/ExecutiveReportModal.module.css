@@ -376,7 +376,11 @@
   text-align: center;
 }
 
-/* ULTIMATE ENTERPRISE MULTI-PAGE PRINT RESET (EXACT PAGE COUNT) */
+.printOnlyPortal {
+  display: none;
+}
+
+/* PORTAL PRINTING GUARANTEES EXACT NATURAL PAGE COUNT & ZERO HIDDEN OVERFLOWS */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -384,49 +388,42 @@
     color-adjust: exact !important;
   }
 
-  /* 1. Collapse every DOM element on the page that is NOT part of the CFO report paper lineage */
-  body *:not(:has(.paper)):not(.paper):not(.paper *) {
+  html, body {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 1. Completely collapse the screen React root (#root) and all its popups */
+  :global(#root), .modalOverlay {
     display: none !important;
   }
 
-  /* 2. Reset all ancestor wrappers of the CFO report paper to static visible overflow */
-  html, body, #root, #root *, [class*="container"], [class*="layout"], [class*="viewport"], [class*="content"], [class*="dashboard"], [class*="reports"], [class*="modal"], [class*="overlay"] {
-    height: auto !important;
-    max-height: none !important;
-    min-height: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    overflow: visible !important;
-    position: static !important;
+  /* 2. Reveal ONLY the top-level body portal */
+  .printOnlyPortal {
     display: block !important;
+    position: static !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
+    background-color: #ffffff !important;
   }
 
-  /* 3. Style report sheet cleanly */
-  #root .paper, body .paper, .paper {
+  .printOnlyPortal .paper {
     position: static !important;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 24px !important;
+    padding: 16px !important;
     background-color: #ffffff !important;
     color: #0f172a !important;
     box-shadow: none !important;
     border: none !important;
-    visibility: visible !important;
   }
 
-  /* 4. Hide modal toolbar explicitly */
-  #root .toolbar, .toolbar {
-    display: none !important;
-  }
-
-  /* 5. Prevent row slicing across page breaks */
   tr, .kpiBox, .diagramCard, .signBox, .paperHeader {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
