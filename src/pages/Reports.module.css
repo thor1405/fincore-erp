@@ -195,40 +195,7 @@
   margin-bottom: 16px;
 }
 
-.healthScoreCircle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 800;
-  position: relative;
-}
-
-.healthScoreCircle::after {
-  content: '';
-  position: absolute;
-  top: -10px; left: -10px; right: -10px; bottom: -10px;
-  border-radius: 50%;
-  border: 4px solid var(--border-color);
-}
-
-.healthPerfect { color: var(--color-emerald); }
-.healthPerfect::after { border-color: var(--color-emerald); }
-
-.healthExcellent { color: var(--color-emerald); }
-.healthExcellent::after { border-color: var(--color-emerald); border-left-color: transparent; transform: rotate(45deg); }
-
-.healthGood { color: var(--color-blue); }
-.healthGood::after { border-color: var(--color-blue); border-bottom-color: transparent; transform: rotate(135deg); }
-
-.healthWarning { color: var(--color-amber); }
-.healthWarning::after { border-color: var(--color-amber); border-right-color: transparent; transform: rotate(-45deg); }
-
-.healthPoor { color: var(--color-red); }
-.healthPoor::after { border-color: var(--color-red); }
+/* Cleaned up gauge container */
 
 .healthStatus {
   font-size: 1.1rem;
