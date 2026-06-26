@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import * as XLSX from 'xlsx';
+import { ExecutiveReportModal } from '../components/ExecutiveReportModal';
 import styles from './Reports.module.css';
 
 export function Reports() {
@@ -16,6 +17,7 @@ export function Reports() {
   const { formatCurrency } = useSettings();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   
   // Date range state
   const [dateRange, setDateRange] = useState('monthly'); // 'monthly', 'quarterly', 'yearly', 'all'
@@ -151,7 +153,7 @@ export function Reports() {
             <button className={`${styles.datePickerBtn} ${dateRange === 'yearly' ? styles.active : ''}`} onClick={() => setDateRange('yearly')}>1Y</button>
             <button className={`${styles.datePickerBtn} ${dateRange === 'all' ? styles.active : ''}`} onClick={() => setDateRange('all')}>All</button>
           </div>
-          <Button variant="outline" icon={Download} onClick={handleExportExcel} disabled={isLoading || !data}>Export</Button>
+          <Button variant="outline" icon={Download} onClick={() => setIsExportModalOpen(true)} disabled={isLoading || !data}>Executive Export</Button>
         </div>
       </div>
 
@@ -326,6 +328,15 @@ export function Reports() {
           </div>
         </>
       )}
+
+      <ExecutiveReportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        data={data}
+        title="Comprehensive Financial Audit Report"
+        timeframe={dateRange.toUpperCase()}
+        onExportRaw={handleExportExcel}
+      />
     </div>
   );
 }

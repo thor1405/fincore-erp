@@ -16,6 +16,7 @@ import { PaymentModal } from '../components/PaymentModal';
 import { AgingReportModal } from '../components/AgingReportModal';
 import { RoleGuard } from '../components/RoleGuard';
 import * as XLSX from 'xlsx';
+import { ExecutiveReportModal } from '../components/ExecutiveReportModal';
 import styles from './Dashboard.module.css';
 
 export function Dashboard() {
@@ -38,6 +39,7 @@ export function Dashboard() {
     insights: []
   });
   const [timeframe, setTimeframe] = useState('monthly');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
@@ -162,7 +164,7 @@ export function Dashboard() {
             <option value="yearly">This Year</option>
             <option value="all">All Time</option>
           </select>
-          <Button variant="outline" icon={Download} onClick={handleExportExcel}>Export Data</Button>
+          <Button variant="outline" icon={Download} onClick={() => setIsExportModalOpen(true)}>Executive Report</Button>
           <RoleGuard allowedRoles={['Owner', 'Admin', 'Editor']}>
             <Button icon={Plus} onClick={() => setIsTxModalOpen(true)}>New Transaction</Button>
           </RoleGuard>
@@ -416,6 +418,15 @@ export function Dashboard() {
       <CustomerModal isOpen={isCustomerModalOpen} onClose={() => setIsCustomerModalOpen(false)} onCustomerAdded={fetchDashboardData} />
       <PaymentModal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} onPaymentAdded={fetchDashboardData} />
       <AgingReportModal isOpen={isAgingModalOpen} onClose={() => setIsAgingModalOpen(false)} />
+
+      <ExecutiveReportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        data={data}
+        title="Executive Financial Performance Report"
+        timeframe={timeframe.toUpperCase()}
+        onExportRaw={handleExportExcel}
+      />
     </div>
   );
 }
