@@ -90,32 +90,60 @@ export function ExecutiveReportModal({ isOpen, onClose, data, title = 'Executive
               </div>
             </section>
 
-            {/* Visual Diagram Representation */}
+            {/* Visual Vector Diagram Representation */}
             {monthlyData.length > 0 && (
               <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>2. Revenue vs Expenditure Diagram</h2>
+                <h2 className={styles.sectionTitle}>2. Revenue vs Expenditure Trend Diagram</h2>
                 <div className={styles.diagramCard}>
-                  <div className={styles.diagramBars}>
+                  <div style={{ width: '100%', height: 180, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', borderBottom: '1px solid #cbd5e1', paddingBottom: 12 }}>
                     {monthlyData.slice(0, 8).map((item, idx) => {
                       const inc = item.Income || item.in || 0;
                       const exp = item.Expense || item.out || 0;
-                      const max = Math.max(inc, exp, 1);
-                      const incH = Math.max((inc / max) * 120, 4);
-                      const expH = Math.max((exp / max) * 120, 4);
+                      const max = Math.max(...monthlyData.slice(0, 8).map(m => Math.max(m.Income||m.in||0, m.Expense||m.out||0)), 1);
+                      const incH = Math.max((inc / max) * 140, 4);
+                      const expH = Math.max((exp / max) * 140, 4);
                       return (
-                        <div key={idx} className={styles.diagramCol}>
-                          <div className={styles.barGroup}>
-                            <div className={styles.barInc} style={{ height: `${incH}px` }} title={`Inc: ${formatCurrency(inc)}`}></div>
-                            <div className={styles.barExp} style={{ height: `${expH}px` }} title={`Exp: ${formatCurrency(exp)}`}></div>
-                          </div>
-                          <span className={styles.colLabel}>{item.name || item.time || `T${idx+1}`}</span>
+                        <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1 }}>
+                          <svg width="36" height="144" style={{ overflow: 'visible' }}>
+                            {/* Income Bar (Green Vector Rect) */}
+                            <rect
+                              x="2"
+                              y={144 - incH}
+                              width="14"
+                              height={incH}
+                              fill="#10b981"
+                              rx="3"
+                            >
+                              <title>Income: {formatCurrency(inc)}</title>
+                            </rect>
+                            {/* Expense Bar (Red Vector Rect) */}
+                            <rect
+                              x="20"
+                              y={144 - expH}
+                              width="14"
+                              height={expH}
+                              fill="#ef4444"
+                              rx="3"
+                            >
+                              <title>Expense: {formatCurrency(exp)}</title>
+                            </rect>
+                          </svg>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', textAlign: 'center' }}>
+                            {item.name || item.time || `T${idx+1}`}
+                          </span>
                         </div>
                       );
                     })}
                   </div>
                   <div className={styles.diagramLegend}>
-                    <span className={styles.legendItem}><i className={styles.dotInc}></i> Income Inflow</span>
-                    <span className={styles.legendItem}><i className={styles.dotExp}></i> Expense Outflow</span>
+                    <span className={styles.legendItem}>
+                      <svg width="12" height="12" style={{ marginRight: 6, verticalAlign: '-1px' }}><rect width="12" height="12" rx="2" fill="#10b981"/></svg>
+                      Gross Revenue Inflow
+                    </span>
+                    <span className={styles.legendItem}>
+                      <svg width="12" height="12" style={{ marginRight: 6, verticalAlign: '-1px' }}><rect width="12" height="12" rx="2" fill="#ef4444"/></svg>
+                      Operating Expenditure
+                    </span>
                   </div>
                 </div>
               </section>
