@@ -47,10 +47,10 @@ export function Login() {
     <div className={styles.container}>
       <div className={styles.leftPanel}>
         <div className={styles.loginBox}>
-          <div className={styles.logo}>
+          <Link to="/home" className={styles.logo} style={{ textDecoration: 'none' }}>
             <div className={styles.logoIcon}>FC</div>
             <span className={styles.logoText}>FinCore</span>
-          </div>
+          </Link>
           
           <div className={styles.header}>
             <h1 className={styles.title}>Welcome back</h1>
@@ -113,6 +113,12 @@ export function Login() {
           <div className={styles.signupPrompt}>
             Don't have an account? 
             <Link to="/signup" className={styles.signupLink}>Sign up</Link>
+          </div>
+
+          <div style={{ marginTop: '16px', textAlign: 'center' }}>
+            <Link to="/home" style={{ fontSize: '13.5px', color: 'var(--color-indigo)', textDecoration: 'none', fontWeight: 600 }}>
+              ← Return to Enterprise Homepage
+            </Link>
           </div>
         </div>
       </div>
