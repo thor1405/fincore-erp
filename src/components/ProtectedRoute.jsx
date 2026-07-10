@@ -10,6 +10,9 @@ export function ProtectedRoute() {
   }
 
   if (!user) {
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+      return <Navigate to="/home" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 

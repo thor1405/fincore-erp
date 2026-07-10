@@ -29,6 +29,7 @@ import { Taxes } from './pages/Taxes';
 import { AIPredictor } from './pages/AIPredictor';
 import { Budgets } from './pages/Budgets';
 import { SaaSDetector } from './pages/SaaSDetector';
+import { Home } from './pages/Home';
 
 function App() {
   return (
@@ -37,6 +38,8 @@ function App() {
         <SettingsProvider>
           <BrowserRouter>
             <Routes>
+              <Route path="/home" element={<Home />} />
+              <Route path="/landing" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/invite/:id" element={<AcceptInvite />} />
