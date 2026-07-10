@@ -30,6 +30,15 @@ import { AIPredictor } from './pages/AIPredictor';
 import { Budgets } from './pages/Budgets';
 import { SaaSDetector } from './pages/SaaSDetector';
 import { Home } from './pages/Home';
+import { useAuth } from './contexts/AuthContext';
+
+function RootHandler() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading FinCore...</div>;
+  }
+  return !user ? <Home /> : <Layout />;
+}
 
 function App() {
   return (
@@ -44,6 +53,10 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/invite/:id" element={<AcceptInvite />} />
               
+              <Route path="/" element={<RootHandler />}>
+                <Route index element={<Dashboard />} />
+              </Route>
+
               <Route element={<ProtectedRoute />}>
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Dashboard />} />

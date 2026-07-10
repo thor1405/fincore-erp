@@ -78,7 +78,7 @@ export function Home() {
           </h1>
 
           <p className={styles.heroSubtitle}>
-            Automate general ledgers, eliminate SaaS subscription revenue leakage, and generate audit-ready CFO executive scorecards—all powered by real-time conversational AI and hosted directly on edge infrastructure.
+            Automate general ledgers, eliminate SaaS subscription revenue leakage and generate audit-ready CFO executive scorecards—all powered by real-time conversational AI  and hosted directly on edge infrastructure.
           </p>
 
           <div className={styles.heroCtas}>
@@ -119,7 +119,7 @@ export function Home() {
           <span className={styles.sectionTag}>Platform Overview</span>
           <h2 className={styles.sectionTitle}>Engineered for Financial Rigor & Speed</h2>
           <p className={styles.sectionDesc}>
-            FinCore ERP transforms fragmented accounting sheets into an automated double-entry ledger ecosystem, giving executive leadership complete transparency over cash flow and compliance.
+            FinCore ERP transforms fragmented accounting sheets into an automated double-entry ledger ecosystem, giving executive leadership complete transparency over cash flow  and compliance.
           </p>
         </div>
 
@@ -132,7 +132,7 @@ export function Home() {
               </div>
               <h3 className={styles.pillarTitle}>Automated General Ledger & Aging</h3>
               <p className={styles.pillarText}>
-                Reconcile complex accounting entries across Accounts Receivable and Accounts Payable. Track 30/60/90+ day invoice aging buckets automatically without manual spreadsheet reconciliation.
+                Reconcile complex accounting entries across Accounts Receivable  and Accounts Payable. Track 30/60/90+ day invoice aging buckets automatically without manual spreadsheet reconciliation.
               </p>
             </div>
             <ul className={styles.pillarList}>
@@ -156,7 +156,7 @@ export function Home() {
               </div>
               <h3 className={styles.pillarTitle}>Conversational AI Financial Assistant</h3>
               <p className={styles.pillarText}>
-                Interact with your corporate ledger using natural language. Ask complex diagnostic queries like "Show me our top 3 operational cost spikes this quarter" and receive instant charts and audit notes.
+                Interact with your corporate ledger using natural language. Ask complex diagnostic queries like "Show me our top 3 operational cost spikes this quarter"  and receive instant charts  and audit notes.
               </p>
             </div>
             <ul className={styles.pillarList}>
@@ -180,7 +180,7 @@ export function Home() {
               </div>
               <h3 className={styles.pillarTitle}>CFO Executive Audit Report Engine</h3>
               <p className={styles.pillarText}>
-                Generate vector-precision printable PDF financial documents with a single click. Features executive sign-off blocks, embedded SVG charts, and crisp formatting for board meetings.
+                Generate vector-precision printable PDF financial documents with a single click. Features executive sign-off blocks, embedded SVG charts and crisp formatting for board meetings.
               </p>
             </div>
             <ul className={styles.pillarList}>
@@ -204,7 +204,7 @@ export function Home() {
           <span className={styles.sectionTag}>Intelligent Auditing</span>
           <h2 className={styles.sectionTitle}>SaaS Revenue Leakage Detection</h2>
           <p className={styles.sectionDesc}>
-            Subscription sprawl quietly drains corporate capital. FinCore’s algorithmic engine continuously scans recurring billing pipelines to detect duplicate licenses, forgotten trials, and uncollected invoices.
+            Subscription sprawl quietly drains corporate capital. FinCore’s algorithmic engine continuously scans recurring billing pipelines to detect duplicate licenses, forgotten trials and uncollected invoices.
           </p>
         </div>
 
@@ -216,7 +216,7 @@ export function Home() {
             </div>
             <h3 style={{ fontSize: 28, fontWeight: 800 }}>Stop Paying for Ghost Subscriptions</h3>
             <p style={{ fontSize: 15.5, color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              By cross-referencing ledger transactions against recurring billing signatures, our AI detector flags duplicate software tools, underutilized licenses, and upcoming renewals up to 60 days before charge execution.
+              By cross-referencing ledger transactions against recurring billing signatures, our AI detector flags duplicate software tools, underutilized licenses and upcoming renewals up to 60 days before charge execution.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
@@ -291,7 +291,7 @@ export function Home() {
           <span className={styles.sectionTag}>Competitive Edge</span>
           <h2 className={styles.sectionTitle}>Why Enterprise Teams Choose FinCore</h2>
           <p className={styles.sectionDesc}>
-            Unlike bloatware ERP suites that trap data behind proprietary vendor clouds, FinCore gives engineering and finance leaders total architectural autonomy.
+            Unlike bloatware ERP suites that trap data behind proprietary vendor clouds, FinCore gives engineering  and finance leaders total architectural autonomy.
           </p>
         </div>
 
@@ -303,7 +303,7 @@ export function Home() {
             <div className={styles.whyContent}>
               <h3 className={styles.whyTitle}>Bare-Metal Self-Hosted Edge Cloud</h3>
               <p className={styles.whyDesc}>
-                Full deployment freedom. Host on your own Linux hardware or Raspberry Pi 5 edge infrastructure with Nginx reverse proxy routing and Cloudflare Zero Trust encryption—giving your CFO complete sovereignty over corporate data.
+                Full deployment freedom. Host on your own Linux hardware or Raspberry Pi 5 edge infrastructure with Nginx reverse proxy routing  and Cloudflare Zero Trust encryption—giving your CFO complete sovereignty over corporate data.
               </p>
             </div>
           </div>
@@ -315,7 +315,7 @@ export function Home() {
             <div className={styles.whyContent}>
               <h3 className={styles.whyTitle}>Algorithmic Fallback Resilience</h3>
               <p className={styles.whyDesc}>
-                Cloud APIs and external AI models occasionally timeout. FinCore features embedded algorithmic fallback heuristics (`saas.js`), ensuring your financial analytics continue calculating MRR/ARR with 99.9% guaranteed reliability.
+                Cloud APIs  and external AI models occasionally timeout. FinCore features embedded algorithmic fallback heuristics (`saas.js`), ensuring your financial analytics continue calculating MRR/ARR with 99.9% guaranteed reliability.
               </p>
             </div>
           </div>
@@ -327,7 +327,7 @@ export function Home() {
             <div className={styles.whyContent}>
               <h3 className={styles.whyTitle}>RoleGuard Granular Security (RBAC)</h3>
               <p className={styles.whyDesc}>
-                Enforce strict segregation of duties between Executive leadership, Managing Auditors, and Accountants using JWT-verified access boundaries (`RoleGuard`) and immutable audit trail logs.
+                Enforce strict segregation of duties between Executive leadership, Managing Auditors and Accountants using JWT-verified access boundaries (`RoleGuard`)  and immutable audit trail logs.
               </p>
             </div>
           </div>
@@ -339,7 +339,7 @@ export function Home() {
             <div className={styles.whyContent}>
               <h3 className={styles.whyTitle}>Sub-Second UI & Glassmorphism Aesthetics</h3>
               <p className={styles.whyDesc}>
-                Built on high-speed React 18 and Vite with a modern HSL design system. No heavy reloads or bloated JavaScript bundles—just instant, responsive financial visualizations that wow executive stakeholders.
+                Built on high-speed React 18  and Vite with a modern HSL design system. No heavy reloads or bloated JavaScript bundles—just instant, responsive financial visualizations that wow executive stakeholders.
               </p>
             </div>
           </div>
@@ -355,10 +355,10 @@ export function Home() {
               Built for Financial Technologists who Demand Precision
             </h2>
             <p style={{ fontSize: 16, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 20 }}>
-              FinCore ERP was born out of frustration with legacy enterprise software that takes minutes to load, costs tens of thousands in licensing fees, and locks critical financial data behind opaque proprietary APIs.
+              FinCore ERP was born out of frustration with legacy enterprise software that takes minutes to load, costs tens of thousands in licensing fees and locks critical financial data behind opaque proprietary APIs.
             </p>
             <p style={{ fontSize: 16, color: 'var(--text-muted)', lineHeight: 1.7 }}>
-              Our engineering philosophy is simple: combine strict double-entry accounting rigor with state-of-the-art full-stack web speed. Whether you are running a multi-million dollar SaaS operation or self-hosting on edge hardware, FinCore delivers uncompromising transparency and speed.
+              Our engineering philosophy is simple: combine strict double-entry accounting rigor with state-of-the-art full-stack web speed. Whether you are running a multi-million dollar SaaS operation or self-hosting on edge hardware, FinCore delivers uncompromising transparency  and speed.
             </p>
           </div>
 
@@ -387,7 +387,7 @@ export function Home() {
       <div className={styles.ctaBanner}>
         <h2 className={styles.ctaTitle}>Ready to Experience Automated Financial Precision?</h2>
         <p className={styles.ctaDesc}>
-          Take control of your corporate ledgers, eliminate hidden SaaS leakage, and impress your board with vector-clean executive audit reports today.
+          Take control of your corporate ledgers, eliminate hidden SaaS leakage and impress your board with vector-clean executive audit reports today.
         </p>
         <button onClick={handlePortalLaunch} className={`${styles.btnPrimary} ${styles.btnLarge}`} style={{ margin: '0 auto', background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)' }}>
           <span>Launch FinCore Portal Now</span>
