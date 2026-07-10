@@ -55,7 +55,8 @@ export function Home() {
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             <button onClick={handlePortalLaunch} className={styles.btnPrimary}>
-              <span>{user ? 'Launch Dashboard' : 'Sign In to Portal'}</span>
+              <span className={styles.desktopText}>{user ? 'Launch Dashboard' : 'Sign In to Portal'}</span>
+              <span className={styles.mobileText}>{user ? 'Dashboard' : 'Portal'}</span>
               <ArrowRight size={16} />
             </button>
           </div>

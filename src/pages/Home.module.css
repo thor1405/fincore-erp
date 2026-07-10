@@ -754,8 +754,16 @@
   gap: 20px;
 }
 
+.desktopText {
+  display: inline;
+}
+
+.mobileText {
+  display: none;
+}
+
 /* ==========================================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN (TABLET & MOBILE OPTIMIZED)
    ========================================================================== */
 @media (max-width: 1024px) {
   .pillarGrid,
@@ -763,6 +771,7 @@
   .aboutContainer,
   .spotlightBox {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
 
   .tickerBar {
@@ -775,22 +784,151 @@
 
   .footerGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 36px 24px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .navLinks {
     display: none;
   }
 
+  .hero {
+    padding: 56px 16px 72px;
+  }
+
+  .heroTitle {
+    font-size: clamp(30px, 7.5vw, 44px);
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+  }
+
+  .heroSubtitle {
+    font-size: 15.5px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    padding: 0 4px;
+  }
+
+  .heroCtas {
+    flex-direction: column;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 48px;
+    gap: 14px;
+  }
+
+  .heroCtas button,
+  .heroCtas a {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+
+  .tickerBar {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 20px 14px;
+    gap: 16px;
+  }
+
+  .section {
+    padding: 60px 16px;
+  }
+
+  .sectionTitle {
+    font-size: 26px;
+  }
+
+  .sectionDesc {
+    font-size: 14.5px;
+    padding: 0 4px;
+  }
+
+  .spotlightBox {
+    padding: 32px 20px;
+    border-radius: 20px;
+    gap: 28px;
+  }
+
+  .aboutStats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .ctaBanner {
+    margin: 32px 16px;
+    padding: 44px 20px;
+    border-radius: 20px;
+  }
+
+  .ctaTitle {
+    font-size: 24px;
+  }
+
+  .ctaDesc {
+    font-size: 14.5px;
+  }
+
+  .ctaBanner button {
+    width: 100%;
+    max-width: 360px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .navInner {
+    padding: 0 14px;
+    height: 64px;
+  }
+
+  .brandTitle {
+    font-size: 15.5px;
+  }
+
+  .brandSubtitle {
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+  }
+
+  .desktopText {
+    display: none;
+  }
+
+  .mobileText {
+    display: inline;
+  }
+
+  .btnPrimary {
+    padding: 8px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .themeBtn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .navActions {
+    gap: 8px;
+  }
+
+  .badgePill {
+    font-size: 11.5px;
+    padding: 5px 12px;
+  }
+
   .tickerBar {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .tickerItem {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 16px;
+    padding-bottom: 12px;
   }
 
   .tickerItem:last-child {
@@ -798,12 +936,46 @@
     padding-bottom: 0;
   }
 
+  .pillarCard {
+    padding: 24px 18px;
+  }
+
+  .whyCard {
+    padding: 22px 16px;
+  }
+
+  .spotlightRight {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .leakageRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .leakageRow > div:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 8px;
+  }
+
+  .aboutStats {
+    grid-template-columns: 1fr;
+  }
+
   .footerGrid {
     grid-template-columns: 1fr;
+    gap: 28px;
   }
 
   .footerBottom {
     flex-direction: column;
     text-align: center;
+    gap: 12px;
   }
 }
